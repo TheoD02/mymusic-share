@@ -1,0 +1,23 @@
+{
+  "name": "administrator/mymusic-share.local",
+  "authors": [
+    {
+      "name": "TheoD02",
+      "email": "theo.d0229@gmail.com"
+    }
+  ],
+  "require": {
+    "altorouter/altorouter": "^2.0",
+    "filp/whoops": "^2.9",
+    "ext-pdo": "*",
+    "symfony/var-dumper": "^5.2",
+    "apfelbox/php-file-download": "^2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "App/",
+      "Core\\": "Core/"
+    }
+  },
+  "description": ""
+}
