@@ -4,7 +4,7 @@ use App\Models\Users;
 
 assert($obj instanceof Users);
 ?>
-<h1>Bonjour, <?= $obj->getLastname() . ' ' . $obj->getFirstname() . '.' ?></h1>
+<h1>Bonjour, <?= $obj->getUsername() . '.' ?></h1>
 
 <p>Veuillez confirmer votre compte avec ce lien :
     <a href="<?=

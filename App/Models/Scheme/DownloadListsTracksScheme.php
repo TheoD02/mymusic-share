@@ -15,9 +15,6 @@ class DownloadListsTracksScheme extends BaseModel
     protected int $id_tracks;
     protected int $id_usersDownloadLists;
 
-    private static ?Tracks $track = null;
-    private static ?UsersDownloadLists $userDownloadList = null;
-
     /**
      * @return int
      */
@@ -74,36 +71,4 @@ class DownloadListsTracksScheme extends BaseModel
         $this->id_usersDownloadLists = $id_usersDownloadLists;
         return $this;
     }
-
-    /**
-     * @return Tracks|false
-     */
-    public function getTrack(): Tracks|false
-    {
-        if (self::$track === null || self::$track->getId() !== $this->getIdTracks())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_tracks` WHERE `id` = :idTrack');
-            $stmt->bindValue(':idTrack', $this->getIdUsersDownloadLists(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$track = $stmt->fetchObject(Tracks::class);
-        }
-        return self::$track;
-    }
-
-
-    /**
-     * @return UsersDownloadLists|false
-     */
-    public function getUserDownloadList(): UsersDownloadLists|false
-    {
-        if (self::$userDownloadList === null || self::$userDownloadList->getId() !== $this->getIdUsersDownloadLists())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_usersdownloadlists` WHERE `id` = :idUserDownloadList');
-            $stmt->bindValue(':idUserDownloadList', $this->getIdUsersDownloadLists(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$userDownloadList = $stmt->fetchObject(UsersDownloadLists::class);
-        }
-        return self::$userDownloadList;
-    }
-
 }

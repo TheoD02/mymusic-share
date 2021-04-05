@@ -13,6 +13,7 @@ use Core\Base\BaseView;
 use Core\Database;
 use Core\FlashMessageService;
 use Core\Form\FormValidator;
+use Core\PaginationService;
 use Core\Security;
 use Core\SpaceDiskHelper;
 use Exception;
@@ -22,23 +23,45 @@ class AdminMusicsManagementController extends BaseAdminController
     /**
      * Affiche la liste des musique en ligne et en attente
      *
-     * @throws \Exception
+     * @param int $pageNumber
+     *
+     * @throws Exception
      */
-    public function showMusicList(): void
+    public function showMusicList(int $pageNumber = 1): void
     {
-        $tracksList = (new Tracks())->getTracksList(true, 0, 100);
+        $tracksMdl = new Tracks();
+
+        /** Défini les données de pagination (Nombre total éléments, Nombre d'éléments par page, Numéro de page courante) */
+        PaginationService::setTotalNumberOfElements($tracksMdl->getTotalNumberOfTracks());
+        PaginationService::setNumberOfElementsPerPage(5);
+        PaginationService::setCurrentPage($pageNumber);
+        PaginationService::calculate();
+
+        /** Récupérer la liste des musiques, avec l'offset et la limit calculer avec PaginationService */
+        $tracksList = $tracksMdl->getTracksList(true, PaginationService::getOffsetForDB(), PaginationService::getLimitForDB());
         $this->render('Musics/MusicsList', 'Liste des musique en ligne', ['tracksList' => $tracksList], BaseView::BACK_OFFICE_PATH);
     }
 
     /**
      * Affiche la liste des musique en attente de mise en ligne
      *
-     * @throws \Exception
+     * @param int $pageNumber
+     *
+     * @throws Exception
      */
-    public function showPendingMusicsList(): void
+    public function showPendingMusicsList(int $pageNumber = 1): void
     {
-        $tracksList = (new Tracks())->getPendingTracksList();
-        $this->render('Musics/MusicsList', 'Liste des musique en ligne', ['tracksList' => $tracksList], BaseView::BACK_OFFICE_PATH);
+        $tracksMdl = new Tracks();
+
+        /** Défini les données de pagination (Nombre total éléments, Nombre d'éléments par page, Numéro de page courante) */
+        PaginationService::setTotalNumberOfElements($tracksMdl->getTotalNumberOfPendingTracks());
+        PaginationService::setNumberOfElementsPerPage(10);
+        PaginationService::setCurrentPage($pageNumber);
+        PaginationService::calculate();
+
+        /** Récupérer la liste des musiques, avec l'offset et la limit calculer avec PaginationService */
+        $tracksList = $tracksMdl->getPendingTracksList(PaginationService::getOffsetForDB(), PaginationService::getLimitForDB());
+        $this->render('Musics/MusicsList', 'Liste des musique en attente de mise en ligne', ['tracksList' => $tracksList], BaseView::BACK_OFFICE_PATH);
     }
 
     /**
@@ -48,7 +71,9 @@ class AdminMusicsManagementController extends BaseAdminController
      */
     public function addMusic(): void
     {
+        /** Vérifier que l'espace disponible sur le serveur est supérieur à 2GO */
         SpaceDiskHelper::checkFreeSpace(2);
+
         $FV = new FormValidator($_POST, $_FILES);
         /** Le formulaire existe et le token CSRF est valide. */
         if ($FV->checkFormIsSend('uploadMusicAction'))
@@ -79,7 +104,7 @@ class AdminMusicsManagementController extends BaseAdminController
                ->isNotEmpty()
                ->minLength(1)
                ->maxLength(255);
-            $FV->verify('artists')
+            $FV->verify('artistsName')
                ->isNotEmpty()
                ->minLength(1)
                ->maxLength(100);
@@ -119,7 +144,7 @@ class AdminMusicsManagementController extends BaseAdminController
                                ->setHash(Security::generateToken(15) . (new \DateTime())->getTimestamp() . Security::generateToken(15));
 
                     /** Récupérer les ID des artistes trouver ou ajouter */
-                    $listOfArtistsId = $this->addOrGetArtistId($FV->getFieldValue('artists'));
+                    $listOfArtistsId = $this->addOrGetArtistId($FV->getFieldValue('artistsName'));
 
                     /** Si la musique est envoyé dans les musique en attente la placer dans le dossier awaiting_tracks */
                     if ($trackModel->isPending())
@@ -141,7 +166,6 @@ class AdminMusicsManagementController extends BaseAdminController
                         $finalRelativeFilePath = '/assets/musics/categories/' . $trackModel->getHash() . '.mp3';
                     }
                     $trackModel->setPath($finalRelativeFilePath);
-
                     /** Déplacer le fichier à la destination final */
                     if (!rename($tempPath, $finalDestinationPath))
                     {
@@ -154,6 +178,7 @@ class AdminMusicsManagementController extends BaseAdminController
                         {
                             /** Associer le/les artiste à la musique via son ID */
                             $this->associateArtistToTrack($trackModel->getLastInsertId(), $listOfArtistsId);
+                            /** Toutes les requêtes sont valide on envoi les données en base de données */
                             Database::getPDOInstance()->commit();
 
                             FlashMessageService::addSuccessMessage('La musique [' . $trackModel->getTitle() . '] à bien été mis en ligne.');
@@ -169,8 +194,9 @@ class AdminMusicsManagementController extends BaseAdminController
                 }
                 catch (Exception $e)
                 {
+                    /** Une exception à été générer dans lors d'une requête SQL, on annule toutes les requêtes */
                     Database::getPDOInstance()->rollBack();
-                    die($e->getMessage());
+                    FlashMessageService::addErrorMessage('Une erreur est survenue lors de la mise en ligne de votre musique. Veuillez ressayer !');
                 }
             }
         }
@@ -191,6 +217,13 @@ class AdminMusicsManagementController extends BaseAdminController
         ], BaseView::BACK_OFFICE_PATH);
     }
 
+    /**
+     * Gère l'edition d'une musique
+     *
+     * @param int $id
+     *
+     * @throws Exception
+     */
     public function editMusic(int $id): void
     {
         $FV        = new FormValidator($_POST);
@@ -198,11 +231,12 @@ class AdminMusicsManagementController extends BaseAdminController
         /** Le formulaire existe et le token CSRF est valide. */
         if ($FV->checkFormIsSend('editMusicAction'))
         {
+            /** Vérifier les champs */
             $FV->verify('title')
                ->isNotEmpty()
                ->minLength(1)
                ->maxLength(255);
-            $FV->verify('artists')
+            $FV->verify('artistsName')
                ->isNotEmpty()
                ->minLength(1)
                ->maxLength(100);
@@ -246,12 +280,13 @@ class AdminMusicsManagementController extends BaseAdminController
                     $currentArtistsId = array_column($trackModel->getArtistsIds(), 'id_artists');
 
                     /** Récupérer les ID des artistes existant ou ajouter */
-                    $listOfArtistsId = $this->addOrGetArtistId($FV->getFieldValue('artists'));
+                    $listOfArtistsId = $this->addOrGetArtistId($FV->getFieldValue('artistsName'));
 
                     /** Contient les artiste à ajouter */
                     $artistToAdd = array_diff($listOfArtistsId, $currentArtistsId);
                     /** Contient les artistes à supprimer */
                     $artistToDissociate = array_diff($currentArtistsId, $listOfArtistsId);
+
 
                     /** Si il y des artiste à associer */
                     if (!empty($artistToAdd))
@@ -289,15 +324,21 @@ class AdminMusicsManagementController extends BaseAdminController
                     /** Mettre à jour les informations de la musique */
                     if ($trackModel->updateTrackInfoById())
                     {
+                        /** Toutes les requêtes sont valide on envoi les données en base de données */
                         Database::getPDOInstance()->commit();
                         FlashMessageService::addSuccessMessage('Musique mise à jour avec succès.');
                         $this->redirectWithAltoRouter('adminMusicsList');
                     }
+                    else
+                    {
+                        FlashMessageService::addErrorMessage('Une erreur est survenue lors de la mise à jour de la musique.');
+                    }
                 }
                 catch (Exception $e)
                 {
+                    /** Une exception à été générer dans lors d'une requête SQL, on annule toutes les requêtes */
                     Database::getPDOInstance()->rollBack();
-                    die($e->getMessage());
+                    FlashMessageService::addErrorMessage('Une erreur est survenue lors de la mise à jour de la musique.');
                 }
             }
         }
@@ -326,10 +367,13 @@ class AdminMusicsManagementController extends BaseAdminController
     public function deleteMusicAction(int $id): void
     {
         $FV = new FormValidator($_POST);
+        /** Vérifier que le formulaire soit envoyé et que le token CSRF soit valide */
         if ($FV->checkFormIsSend('deleteMusicAction'))
         {
             $trackModel = new Tracks();
             $trackModel->setId($id);
+
+            /** Supprimer la musique via son ID */
             if ($trackModel->deleteTrackById())
             {
                 FlashMessageService::addSuccessMessage('Musique supprimée avec succès.');

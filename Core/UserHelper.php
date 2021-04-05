@@ -76,11 +76,16 @@ class UserHelper
         return self::isAuthAs(self::AdminRole);
     }
 
-    /**
-     * Retourne si l'utilisateur à le droit au téléchargement.
+    /** Définir si l'utilisateur à le droit de télécharger
      *
-     * @return bool
+     * @param bool $canDownload
      */
+    public static function setIsAuthorizedToDownload(bool $canDownload): void
+    {
+        $_SESSION['user']['canDownload'] = $canDownload;
+    }
+
+    /** Retourne le statut si l'utilisateur à le droit de télécharger */
     public static function isAuthorizedToDownload(): bool
     {
         return $_SESSION['user']['canDownload'] ?? false;

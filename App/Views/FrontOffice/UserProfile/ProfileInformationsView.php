@@ -12,15 +12,8 @@ use Core\CSRFHelper;
             <?php if (!empty($userInfo)) : ?>
                 <div class="col-md-6 offset-md-3 py-3">
                     <p class="h4">Information personnelles : </p>
-                    <p>Nom : <?= $userInfo->getLastname() ?></p>
-                    <p>Prénom : <?= $userInfo->getFirstName() ?></p>
-                </div>
-                <div class="col-md-6 offset-md-3">
-                    <p class="h4">Adresse : </p>
-                    <p>Adresse : <?= $userInfo->getHouseNumber() ?> <?= $userInfo->getAddress() ?></p>
-                    <p>Ville : <?= $userInfo->getCity() ?></p>
-                    <p>Code postale : <?= $userInfo->getZipCode() ?></p>
-                    <p>Pays : <?= $userInfo->getCountry() ?></p>
+                    <p>Nom d'utilisateur : <?= $userInfo->getUsername() ?></p>
+                    <p>Email : <?= $userInfo->getEmail() ?></p>
                     <form action="<?= AltoRouter::getRouterInstance()->generate('editProfilInformations') ?>" method="POST">
                         <?= CSRFHelper::generateCsrfHiddenInput() ?>
                         <div class="form-group">

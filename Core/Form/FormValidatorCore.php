@@ -103,6 +103,20 @@ class FormValidatorCore
     }
 
     /**
+     * Retourne la valeur saisie dans le champ les caractères HTML encodé ou null
+     *
+     * @param string|null $fieldName Nom du champ à récupérer si non préciser il prend le champ en
+     *                               cours
+     * @param bool        $entities
+     *
+     * @return string|null
+     */
+    public function getFieldValue(?string $fieldName = null): ?string
+    {
+        return htmlspecialchars(self::$data[$fieldName ?? $this->name]);
+    }
+
+    /**
      * Retourne la valeur saisie dans le champ ou null
      *
      * @param string|null $fieldName Nom du champ à récupérer si non préciser il prend le champ en
@@ -110,7 +124,7 @@ class FormValidatorCore
      *
      * @return string|null
      */
-    public function getFieldValue(?string $fieldName = null): ?string
+    public function getCurrentValue(?string $fieldName = null): ?string
     {
         return self::$data[$fieldName ?? $this->name] ?? null;
     }

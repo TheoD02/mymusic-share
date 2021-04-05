@@ -17,43 +17,13 @@ class Users extends UsersScheme
     public function addUser(): bool
     {
         $stmt = $this->prepare('INSERT INTO `myokndefht_users` 
-                                      (`lastName`, `firstName`, `email`, `password`, `houseNumber`, `country`, `zipCode`, `city`, `address`, `confirmationToken`, `confirmationTokenExpire`) VALUES
-                                      (:lastname, :firstname, :email, :password, :houseNumber, :country, :zipcode, :city, :address, :confirmationToken, :confirmationTokenExpire);');
-        $stmt->bindValue(':lastname', $this->getLastname(), PDO::PARAM_STR);
-        $stmt->bindValue(':firstname', $this->getFirstname(), PDO::PARAM_STR);
+                                      (`username`, `email`, `password`, `confirmationToken`, `confirmationTokenExpire`) VALUES
+                                      (:username, :email, :password, :confirmationToken, :confirmationTokenExpire);');
+        $stmt->bindValue(':username', $this->getUsername(), PDO::PARAM_STR);
         $stmt->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
         $stmt->bindValue(':password', $this->getPassword(), PDO::PARAM_STR);
-        $stmt->bindValue(':country', $this->getCountry(), PDO::PARAM_STR);
-        $stmt->bindValue(':houseNumber', $this->getHouseNumber(), PDO::PARAM_INT);
-        $stmt->bindValue(':zipcode', $this->getZipCode(), PDO::PARAM_INT);
-        $stmt->bindValue(':city', $this->getCity(), PDO::PARAM_STR);
-        $stmt->bindValue(':address', $this->getAddress(), PDO::PARAM_STR);
         $stmt->bindValue(':confirmationToken', $this->getConfirmationToken(), PDO::PARAM_STR);
         $stmt->bindValue(':confirmationTokenExpire', $this->getConfirmationTokenExpire(), PDO::PARAM_STR);
-        return $stmt->execute();
-    }
-
-    /**
-     * Add user without any information concerning address
-     *
-     * @return bool
-     */
-    public function addUserEssential(): bool
-    {
-        $stmt = $this->prepare('INSERT INTO `myokndefht_users` 
-                                      (`lastName`, `firstName`, `email`, `password`, `houseNumber`, `country`, `zipCode`, `city`, `address`, `confirmationToken`, `confirmationTokenExpire`) VALUES
-                                      (:lastname, :firstname, :email, :password, :country, :zipcode, :city, :address, :confirmationToken, :confirmationTokenExpire);');
-        $stmt->bindValue(':lastname', $this->getLastname(), PDO::PARAM_STR);
-        $stmt->bindValue(':firstname', $this->getFirstname(), PDO::PARAM_STR);
-        $stmt->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
-        $stmt->bindValue(':password', $this->getPassword(), PDO::PARAM_STR);
-        $stmt->bindValue(':country', '', PDO::PARAM_STR);
-        $stmt->bindValue(':houseNumber', $this->getHouseNumber(), PDO::PARAM_INT);
-        $stmt->bindValue(':zipcode', '', PDO::PARAM_STR);
-        $stmt->bindValue(':city', '', PDO::PARAM_STR);
-        $stmt->bindValue(':address', '', PDO::PARAM_STR);
-        $stmt->bindValue(':confirmationToken', '', PDO::PARAM_STR);
-        $stmt->bindValue(':confirmationTokenExpire', '', PDO::PARAM_STR);
         return $stmt->execute();
     }
 
@@ -72,13 +42,26 @@ class Users extends UsersScheme
     }
 
     /**
+     * Vérifie si un nom d'utilisateur est déjà en base de données
+     *
+     * @return bool
+     */
+    public function checkUsernameExists(): bool
+    {
+        $stmt = $this->prepare('SELECT COUNT(`id`) AS `isExist` FROM `myokndefht_users` WHERE `username` = :username;');
+        $stmt->bindValue(':username', $this->getUsername(), PDO::PARAM_STR);
+        $stmt->execute();
+        return (bool)$stmt->fetch()->isExist;
+    }
+
+    /**
      * Recherche un utilisateur via son email
      *
      * @return Users|false
      */
     public function getUserByEmail(): Users|false
     {
-        $stmt = $this->prepare('SELECT `id`, `firstName`, `lastName`, `email`, `password`, `confirmationDate`, `confirmationToken`, `confirmationTokenExpire`, `passwordResetToken`, `passwordResetExpire`, `id_userRole`, `remainingDownload`, `rememberMeToken`, `houseNumber` FROM `myokndefht_users` WHERE `email` = :email;');
+        $stmt = $this->prepare('SELECT `id`, `username`, `email`, `password`, `confirmationDate`, `confirmationToken`, `confirmationTokenExpire`, `passwordResetToken`, `passwordResetExpire`, `id_userRole`, `remainingDownload`, `rememberMeToken` FROM `myokndefht_users` WHERE `email` = :email;');
         $stmt->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchObject(self::class);
@@ -91,7 +74,7 @@ class Users extends UsersScheme
      */
     public function getUserById(): Users|false
     {
-        $stmt = $this->prepare('SELECT `id`, `firstName`, `lastName`, `email`, `password`, `confirmationDate`, `confirmationToken`, `confirmationTokenExpire`, `passwordResetToken`, `passwordResetExpire`, `id_userRole`, `remainingDownload`, `rememberMeToken`, `address`, `houseNumber`, `country`, `city`, `zipCode` FROM `myokndefht_users` WHERE `id` = :id;');
+        $stmt = $this->prepare('SELECT `id`, `username`, `email`, `password`, `confirmationDate`, `confirmationToken`, `confirmationTokenExpire`, `passwordResetToken`, `passwordResetExpire`, `id_userRole`, `remainingDownload`, `rememberMeToken` FROM `myokndefht_users` WHERE `id` = :id;');
         $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchObject(self::class);
@@ -104,7 +87,7 @@ class Users extends UsersScheme
      */
     public function getUserByPasswordResetToken(): Users|false
     {
-        $stmt = $this->prepare('SELECT `id`, `firstName`, `lastName`, `email`, `password`, `confirmationDate`, `confirmationToken`, `confirmationTokenExpire`, `passwordResetToken`, `passwordResetExpire`, `id_userRole`, `remainingDownload`, `rememberMeToken` FROM `myokndefht_users` WHERE `passwordResetToken` = :passwordResetToken;');
+        $stmt = $this->prepare('SELECT `id`, `username`, `email`, `password`, `confirmationDate`, `confirmationToken`, `confirmationTokenExpire`, `passwordResetToken`, `passwordResetExpire`, `id_userRole`, `remainingDownload`, `rememberMeToken` FROM `myokndefht_users` WHERE `passwordResetToken` = :passwordResetToken;');
         $stmt->bindValue(':passwordResetToken', $this->getPasswordResetToken(), PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchObject(self::class);
@@ -115,9 +98,9 @@ class Users extends UsersScheme
      *
      * @return Users|false
      */
-    public function getUserByRememberMeToken(): Users|falsereme
+    public function getUserByRememberMeToken(): Users|false
     {
-        $stmt = $this->prepare('SELECT `id`, `firstName`, `lastName`, `email`, `password`, `confirmationDate`, `confirmationToken`, `confirmationTokenExpire`, `passwordResetToken`, `passwordResetExpire`, `id_userRole`, `remainingDownload`, `rememberMeToken` FROM `myokndefht_users` WHERE `rememberMeToken` = :rememberMeToken;');
+        $stmt = $this->prepare('SELECT `id`, `username`, `email`, `password`, `confirmationDate`, `confirmationToken`, `confirmationTokenExpire`, `passwordResetToken`, `passwordResetExpire`, `id_userRole`, `remainingDownload`, `rememberMeToken` FROM `myokndefht_users` WHERE `rememberMeToken` = :rememberMeToken;');
         $stmt->bindValue(':rememberMeToken', $this->getRememberMeToken(), PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchObject(self::class);
@@ -194,9 +177,9 @@ class Users extends UsersScheme
      *
      * @return Users[]|false
      */
-    public function getUsersList(): array|false
+    public function getUsersList(int $startOffset = 0, int $limit = 100): array|false
     {
-        $stmt = $this->prepare('SELECT `id`, `lastName`, `firstName`, `email`, `confirmationDate` AS `isConfirmed` FROM `myokndefht_users`');
+        $stmt = $this->prepare('SELECT `id`, `username`, `email`, `confirmationDate` AS `isConfirmed` FROM `myokndefht_users` LIMIT ' . $startOffset . ', ' . $limit);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
@@ -208,16 +191,10 @@ class Users extends UsersScheme
      */
     public function updateUserInfoById(): bool
     {
-        $stmt = $this->prepare('UPDATE `myokndefht_users` SET `lastName` = :lastname, `firstName` = :firstname, `email` = :email, `zipCode` = :zipCode, `country` = :country, `city` = :city, `address` = :address, `houseNumber` = :houseNumber, `id_userRole` = :idUserRole WHERE `id` = :id');
+        $stmt = $this->prepare('UPDATE `myokndefht_users` SET `username` = :username, `email` = :email, `id_userRole` = :idUserRole WHERE `id` = :id');
         $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
-        $stmt->bindValue(':lastname', $this->getLastName(), PDO::PARAM_STR);
-        $stmt->bindValue(':firstname', $this->getFirstName(), PDO::PARAM_STR);
+        $stmt->bindValue(':username', $this->getUsername(), PDO::PARAM_STR);
         $stmt->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
-        $stmt->bindValue(':zipCode', $this->getZipCode(), PDO::PARAM_STR);
-        $stmt->bindValue(':country', $this->getCountry(), PDO::PARAM_STR);
-        $stmt->bindValue(':city', $this->getCity(), PDO::PARAM_STR);
-        $stmt->bindValue(':address', $this->getAddress(), PDO::PARAM_STR);
-        $stmt->bindValue(':houseNumber', $this->getHouseNumber(), PDO::PARAM_INT);
         $stmt->bindValue(':idUserRole', $this->getIdUserRole(), PDO::PARAM_INT);
         return $stmt->execute();
     }
@@ -257,5 +234,17 @@ class Users extends UsersScheme
         $stmt = $this->prepare('UPDATE `myokndefht_users` SET `remainingDownload` = `remainingDownload` - 1 WHERE `id` = :id');
         $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
         return $stmt->execute();
+    }
+
+    /**
+     * Retourne le nombre totale d'utilisateurs
+     *
+     * @return int
+     */
+    public function getTotalNumberOfUsers(): int
+    {
+        $stmt = $this->query('SELECT COUNT(`id`) AS `usersCount` FROM `myokndefht_users`');
+        $stmt->execute();
+        return $stmt->fetch()->usersCount;
     }
 }

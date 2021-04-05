@@ -15,9 +15,6 @@ class ArtistsTracksScheme extends BaseModel
     protected int $id_artists;
     protected int $id_tracks;
 
-    private static ?Artists $artist = null;
-    private static ?Tracks $track = null;
-
     /**
      * Retourne les variables de l'objet
      *
@@ -83,35 +80,5 @@ class ArtistsTracksScheme extends BaseModel
     {
         $this->id_tracks = $id_tracks;
         return $this;
-    }
-
-    /**
-     * @return Artists|false
-     */
-    public function getArtist(): Artists|false
-    {
-        if (self::$artist === null || self::$artist->getId() !== $this->getIdArtists())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_artists` WHERE `id` = :idArtist');
-            $stmt->bindValue(':idArtist', $this->getIdArtists(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$artist = $stmt->fetchObject(Artists::class);
-        }
-        return self::$artist;
-    }
-
-    /**
-     * @return Tracks|false
-     */
-    public function getTrack(): Tracks|false
-    {
-        if (self::$track === null || self::$track->getId() !== $this->getIdTracks())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_tracks` WHERE `id` = :idTrack');
-            $stmt->bindValue(':idTrack', $this->getIdTracks(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$track = $stmt->fetchObject(Artists::class);
-        }
-        return self::$track;
     }
 }

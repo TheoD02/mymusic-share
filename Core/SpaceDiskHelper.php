@@ -40,13 +40,21 @@ class SpaceDiskHelper
         return $totalSpace - $freeSpace;
     }
 
+    /**
+     * Vérifie l'espace disponible sur le serveur, si l'espace est inférieur à celui à vérifier un mail est envoyé à l'admin
+     *
+     * @param float       $sizeInGo
+     * @param string|null $redirectRoute
+     *
+     * @throws \Exception
+     */
     public static function checkFreeSpace(float $sizeInGo, ?string $redirectRoute = null): void
     {
         if (self::getFreeSpace() < $sizeInGo)
         {
             FlashMessageService::addWarningMessage('La mise en ligne est actuellement restreinte en raison de manque d\'espace sur notre serveur, un signalement à été envoyé automatiquement à l\'administrateur.');
             $mailer = new Mailer();
-            $mailer->setSubject('Report: FreeSpace Limit Reached')->setTo('theo.d02290@gmail.com')
+            $mailer->setSubject('Report: FreeSpace Limit Reached')->setTo(Mailer::ADMIN_EMAIL)
                    ->sendMail('FreeSpaceLimitReached', null);
             if ($redirectRoute !== null)
             {

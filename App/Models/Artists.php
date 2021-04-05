@@ -38,11 +38,14 @@ class Artists extends ArtistsScheme
     /**
      * Retourne la liste des artistes
      *
+     * @param int $startOffset
+     * @param int $limit
+     *
      * @return Artists[]|false
      */
-    public function getArtistList(): array|false
+    public function getArtistList(int $startOffset = 0, int $limit = 100): array|false
     {
-        $stmt = $this->prepare('SELECT * FROM `myokndefht_artists`');
+        $stmt = $this->prepare('SELECT * FROM `myokndefht_artists` LIMIT ' . $startOffset . ', ' . $limit);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
@@ -83,5 +86,17 @@ class Artists extends ArtistsScheme
         $stmt = $this->prepare('DELETE FROM `myokndefht_artists` WHERE `id` = :id');
         $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
         return $stmt->execute();
+    }
+
+    /**
+     * Retourne le nombre d'artistes
+     *
+     * @return int
+     */
+    public function getTotalNumberOfArtists(): int
+    {
+        $stmt = $this->query('SELECT COUNT(`id`) AS `artistsCount` FROM `myokndefht_artists`');
+        $stmt->execute();
+        return $stmt->fetch()->artistsCount;
     }
 }

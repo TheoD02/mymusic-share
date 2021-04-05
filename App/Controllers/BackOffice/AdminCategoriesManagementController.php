@@ -8,17 +8,29 @@ use Core\Base\BaseView;
 use Core\CSRFHelper;
 use Core\FlashMessageService;
 use Core\Form\FormValidator;
+use Core\PaginationService;
 
 class AdminCategoriesManagementController extends BaseAdminController
 {
     /**
      * Affiche la liste des catégories
      *
+     * @param int $pageNumber
+     *
      * @throws \Exception
      */
-    public function showCategoriesList(): void
+    public function showCategoriesList(int $pageNumber = 1): void
     {
-        $categoriesList = (new Categories())->getCategoriesList();
+        $categoryMdl = new Categories();
+
+        /** Défini les données de pagination (Nombre total éléments, Nombre d'éléments par page, Numéro de page courante) */
+        PaginationService::setTotalNumberOfElements($categoryMdl->getTotalNumberOfCategories());
+        PaginationService::setNumberOfElementsPerPage(10);
+        PaginationService::setCurrentPage($pageNumber);
+        PaginationService::calculate();
+
+        /** Récupérer la liste des catégories, avec l'offset et la limit calculer avec PaginationService */
+        $categoriesList = $categoryMdl->getCategoriesList(PaginationService::getOffsetForDB(), PaginationService::getLimitForDB());
         $this->render('Categories/CategoriesList', 'Liste des catégories', ['categoriesList' => $categoriesList], BaseView::BACK_OFFICE_PATH);
     }
 
@@ -33,8 +45,11 @@ class AdminCategoriesManagementController extends BaseAdminController
     {
         /** Vérification du formulaire */
         $FV = new FormValidator($_POST, $_FILES);
+
+        /** Vérifié que le formulaire est envoyé et que le token CSRF est valide */
         if ($FV->checkFormIsSend('addCategoryAction'))
         {
+            /** Vérifier les champ si ils sont valide */
             $FV->verify('name')
                ->isNotEmpty();
             $FV->verify('slug')
@@ -45,6 +60,7 @@ class AdminCategoriesManagementController extends BaseAdminController
             $FV->verifyFile('imgPath')
                ->fileMaxSize(12)
                ->fileIsFormat([FormValidator::IMAGE_JPG => 'jpg/jpeg', FormValidator::IMAGE_PNG => 'png']);
+
             /** Instanciation du model, on lui passe les données entrée par l'utilisateur */
             $categoriesModel = new Categories();
             $categoriesModel->setName($FV->getFieldValue('name'))

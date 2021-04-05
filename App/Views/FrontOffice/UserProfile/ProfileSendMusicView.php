@@ -41,11 +41,11 @@ FormHelper::setFormData($_POST);
                                         <?= FormValidator::getOneErrorHTML('title') ?>
                                     </div>
                                     <div class="form-group my-3">
-                                        <label for="artists">Artistes</label>
-                                        <input type="text" class="form-control input-tags <?= FormValidator::fieldIsValid('artists') ?>"
-                                               name="artists" id="artists" value="<?= FormHelper::getSanitizedFieldValue('artists') ?>"
+                                        <label for="artistsName">Artistes</label>
+                                        <input type="text" class="form-control input-tags <?= FormValidator::fieldIsValid('artistsName') ?>"
+                                               name="artistsName" id="artistsName" value="<?= FormHelper::getSanitizedFieldValue('artistsName') ?>"
                                                placeholder="Artistes">
-                                        <?= FormValidator::getOneErrorHTML('artists') ?>
+                                        <?= FormValidator::getOneErrorHTML('artistsName') ?>
                                     </div>
                                     <div class="form-floating my-3 col-md-3 col-sm-6">
                                         <input type="text" class="form-control  <?= FormValidator::fieldIsValid('bpm') ?>" name="bpm" id="bpm"

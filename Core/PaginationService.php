@@ -98,6 +98,9 @@ class PaginationService
         $pagination = [];
         for ($i = self::getOffsetStart(); $i <= self::getOffsetEnd(); $i++)
         {
+            if ($i === 1 || $i === self::getTotalPages()){
+                continue;
+            }
             $pagination[] = $i;
         }
         return $pagination;

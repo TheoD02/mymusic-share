@@ -30,17 +30,17 @@ class PlayerController
             exit();
         }
         /** Ne pas utiliser la session pour ce script, il bloque le chargement de tout autre script charger tant que ce script est en cours */
-        session_abort();
+        session_write_close();
         /** Timestamp en millisecondes (- 1613951000000) renvoyé en GET lors du lancement de la lecture d'une musique */
         $requestLinkDate = (new \DateTime())->setTimestamp(($date + 1613951000000) / 1000);
         $diffDate        = (new \DateTime())->diff($requestLinkDate);
 
         /**
-         * Si l'entête contient Content-Range, que le referer est "DOMAIN/category" et que le temps du timestamp soit inférieur à 10 minutes
+         * Si l'entête contient Content-Range, que le referer est "DOMAIN/category"... et que le temps du timestamp soit inférieur à 10 minutes
          */
         if ($diffDate->i < 10 && $diffDate->h === 0 && $diffDate->days === 0)
         {
-            if (isset($_SERVER['HTTP_RANGE']) && isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === DEFAULT_DOMAIN_NAME && isset($_SERVER['HTTP_REFERER']) && (str_contains($_SERVER['HTTP_REFERER'], '/category/') || str_contains($_SERVER['HTTP_REFERER'], '/new-release')))
+            if (isset($_SERVER['HTTP_RANGE']) && isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === DEFAULT_DOMAIN_NAME && isset($_SERVER['HTTP_REFERER']) && (str_contains($_SERVER['HTTP_REFERER'], '/category/') || str_contains($_SERVER['HTTP_REFERER'], '/new-release') || str_contains($_SERVER['HTTP_REFERER'], '/top-50/') || str_contains($_SERVER['HTTP_REFERER'], '/profile/download-lists/') || str_contains($_SERVER['HTTP_REFERER'], '/search')))
             {
                 $trackInfo = (new Tracks())->setHash($hash)
                                            ->getMp3ByHash();

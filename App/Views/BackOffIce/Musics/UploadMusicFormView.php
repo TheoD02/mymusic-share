@@ -44,11 +44,11 @@ FormHelper::setFormData($musicInfo ?? $_POST);
                                         <?= FormValidator::getOneErrorHTML('title') ?>
                                     </div>
                                     <div class="form-group my-3">
-                                        <label for="artists">Artistes</label>
-                                        <input type="text" class="form-control input-tags <?= FormValidator::fieldIsValid('artists') ?>"
-                                               name="artists" id="artists" value="<?= FormHelper::getSanitizedFieldValue('artists') ?>"
+                                        <label for="artistsName">Artistes</label>
+                                        <input type="text" class="form-control input-tags <?= FormValidator::fieldIsValid('artistsName') ?>"
+                                               name="artistsName" id="artistsName" value="<?= FormHelper::getSanitizedFieldValue('artistsName') ?>"
                                                placeholder="Artistes">
-                                        <?= FormValidator::getOneErrorHTML('artists') ?>
+                                        <?= FormValidator::getOneErrorHTML('artistsName') ?>
                                     </div>
                                     <div class="form-floating my-3 col-md-3 col-sm-6">
                                         <input type="text" class="form-control  <?= FormValidator::fieldIsValid('bpm') ?>" name="bpm" id="bpm"
@@ -106,7 +106,7 @@ FormHelper::setFormData($musicInfo ?? $_POST);
                                     </div>
                                     <div class="form-floating my-3">
                                         <select name="isPending" id="isPending"
-                                                class="form-select <?= FormValidator::fieldIsValid('id_categories') ?>">
+                                                class="form-select <?= FormValidator::fieldIsValid('isPending') ?>">
                                             <option value="default" selected disabled>
                                                 Sélectionner l'état de statut de la musique
                                             </option>
@@ -118,7 +118,7 @@ FormHelper::setFormData($musicInfo ?? $_POST);
                                             </option>
                                         </select>
                                         <label for="isPending">Statut de la musique</label>
-                                        <?= FormValidator::getOneErrorHTML('id_categories') ?>
+                                        <?= FormValidator::getOneErrorHTML('isPending') ?>
                                     </div>
                                     <?= \Core\CSRFHelper::generateCsrfHiddenInput() ?>
                                     <div class="form-group my-3">

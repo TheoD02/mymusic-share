@@ -8,7 +8,7 @@ class FormValidator extends FormValidatorCore
 {
     /** Mime Type pour les fichiers */
     public const FILE_PDF    = 'application/pdf';
-    public const FILE_ZIP    = 'application/zip';
+    public const FILE_ZIP    = 'application/temp_music_zip';
     public const FILE_MSWORD = 'application/msword';
     public const AUDIO_MPEG  = 'audio/mpeg';
     public const AUDIO_WAV   = 'audio/wav';
@@ -44,7 +44,7 @@ class FormValidator extends FormValidatorCore
      */
     public function isNotEmpty(): self
     {
-        if (empty($this->getFieldValue()))
+        if (empty($this->getCurrentValue()))
         {
             $this->setError('Veuillez remplir le champ.');
         }
@@ -60,7 +60,7 @@ class FormValidator extends FormValidatorCore
      */
     public function minLength(int $minLength): self
     {
-        if (strlen($this->getFieldValue()) < $minLength)
+        if (strlen($this->getCurrentValue()) < $minLength)
         {
             $this->setError('Le champ requis un minium de ' . $minLength . ' caractères');
         }
@@ -76,7 +76,7 @@ class FormValidator extends FormValidatorCore
      */
     public function maxLength(int $maxLength): self
     {
-        if (strlen($this->getFieldValue()) > $maxLength)
+        if (strlen($this->getCurrentValue()) > $maxLength)
         {
             $this->setError('Le champ requis un maximum de ' . $maxLength . ' caractères');
         }
@@ -118,7 +118,7 @@ class FormValidator extends FormValidatorCore
             'lower' => 'Ll',
             default => throw new \Exception('Veuillez choisir une contrainte valide [both, upper ou lower].'),
         };
-        if (!preg_match('/^[\p{' . $caseConstraint . '}' . ($acceptNumber ? '0-9' : '') . $chars . ']+$/u', $this->getFieldValue()))
+        if (!preg_match('/^[\p{' . $caseConstraint . '}' . ($acceptNumber ? '0-9' : '') . $chars . ']+$/u', $this->getCurrentValue()))
         {
             $this->setError('Veuillez saisir des caractères alphanumérique uniquement' . $messageDetail);
         }
@@ -135,17 +135,17 @@ class FormValidator extends FormValidatorCore
      */
     public function isInt(int $min = 0, ?int $max = null): self
     {
-        if (!is_int((int)$this->getFieldValue()))
+        if (!is_int((int)$this->getCurrentValue()))
         {
             $this->setError('Veuillez saisir un nombre entier.');
         }
         else
         {
-            if ($this->getFieldValue() < $min)
+            if ($this->getCurrentValue() < $min)
             {
                 $this->setError('Veuillez saisir une valeur supérieur ou égal à ' . $min . '.');
             }
-            else if ($max !== null && $this->getFieldValue() > $max)
+            else if ($max !== null && $this->getCurrentValue() > $max)
             {
                 $this->setError('Veuillez saisir une valeur inférieur ou égal à ' . $max . '.');
             }
@@ -160,7 +160,7 @@ class FormValidator extends FormValidatorCore
      */
     public function isValidSelect(): self
     {
-        if ($this->getFieldValue() === 'default')
+        if ($this->getCurrentValue() === 'default')
         {
             $this->setError('Veuillez sélectionner un élément.');
         }
@@ -178,17 +178,17 @@ class FormValidator extends FormValidatorCore
      */
     public function isFloat(float $min = 0, ?float $max = null, int $numberOfDecimal = 2): self
     {
-        if (!is_float((float)$this->getFieldValue()))
+        if (!is_float((float)$this->getCurrentValue()))
         {
             $this->setError('Veuillez saisir un nombre à virgule.');
         }
         else
         {
-            if ($this->getFieldValue() < $min)
+            if ($this->getCurrentValue() < $min)
             {
                 $this->setError('Veuillez saisir une valeur supérieur ou égal à ' . number_format($min, $numberOfDecimal) . '.');
             }
-            else if ($max !== null && $this->getFieldValue() > $max)
+            else if ($max !== null && $this->getCurrentValue() > $max)
             {
                 $this->setError('Veuillez saisir une valeur inférieur ou égal à ' . number_format($max, $numberOfDecimal) . '.');
             }
@@ -203,7 +203,7 @@ class FormValidator extends FormValidatorCore
      */
     public function isEmail(): self
     {
-        if (!filter_var($this->getFieldValue(), FILTER_VALIDATE_EMAIL))
+        if (!filter_var($this->getCurrentValue(), FILTER_VALIDATE_EMAIL))
         {
             $this->setError('Veuillez saisir une email valide.');
         }
@@ -246,7 +246,7 @@ class FormValidator extends FormValidatorCore
      */
     public function passwordConstraintRegex(string $regex = '/[^\'"]{12,100}/'): FormValidator
     {
-        if (!preg_match($regex, $this->getFieldValue()))
+        if (!preg_match($regex, $this->getCurrentValue()))
         {
             $this->setError('Veuillez saisir un mot de passe valide.');
         }
@@ -262,7 +262,7 @@ class FormValidator extends FormValidatorCore
      */
     public function passwordCorrespondTo(string $confirmPasswordFieldName): self
     {
-        if (isset(self::$data[$confirmPasswordFieldName]) && $this->getFieldValue() !== self::$data[$confirmPasswordFieldName])
+        if (isset(self::$data[$confirmPasswordFieldName]) && $this->getCurrentValue() !== self::$data[$confirmPasswordFieldName])
         {
             $this->setGeneralError('Les mots de passe ne correspondent pas.');
             $this->setError('Veuillez ressaisir votre mot de passe.', $this->name, true);
@@ -294,7 +294,7 @@ class FormValidator extends FormValidatorCore
      */
     public function isContain(string $searchValue): self
     {
-        if (!str_contains($this->getFieldValue(), $searchValue))
+        if (!str_contains($this->getCurrentValue(), $searchValue))
         {
             $this->setError('Le champ ne contient pas le mot suivant : ' . $searchValue . '.');
         }
@@ -311,7 +311,7 @@ class FormValidator extends FormValidatorCore
      */
     public function isContainAtLeast(string $character, int $minNumberOfCharacter = 1): self
     {
-        if (substr_count($this->getFieldValue(), $character) < $minNumberOfCharacter)
+        if (substr_count($this->getCurrentValue(), $character) < $minNumberOfCharacter)
         {
             $this->setError('Veuillez vérifier le champ et utilisée l\'autocomplétion, utilisée le format suivant : 1 Rue de Paris, Paris, 75000');
         }

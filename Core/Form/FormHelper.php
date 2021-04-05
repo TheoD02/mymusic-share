@@ -32,6 +32,6 @@ class FormHelper
      */
     public static function getSanitizedFieldValue(string $fieldName): ?string
     {
-        return isset(self::$data[$fieldName]) ? htmlentities(self::$data[$fieldName], ENT_QUOTES | ENT_HTML5) : null;
+        return isset(self::$data[$fieldName]) ? htmlspecialchars(self::$data[$fieldName], ENT_QUOTES | ENT_HTML5) : null;
     }
 }

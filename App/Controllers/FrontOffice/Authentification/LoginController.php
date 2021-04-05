@@ -16,7 +16,6 @@ use Core\UserHelper;
 class LoginController extends BaseController
 {
     /**
-     * LoginController constructor.
      * Exécute le constructeur parent et vérifie que l'utilisateur ne soit pas connecté.
      *
      * @throws \Exception
@@ -41,6 +40,9 @@ class LoginController extends BaseController
         $this->render('Authentification/Login', 'Connexion');
     }
 
+    /**
+     * Vérifie les entrée du formulaire de connexion et connecte l'utilisateur si les informations sont valide
+     */
     public function loginAction(): void
     {
         $FV = new FormValidator($_POST);
@@ -99,14 +101,16 @@ class LoginController extends BaseController
                             /** Stocker des informations utilisateur en session (isAuth, role, nom, prénom) */
                             $_SESSION['user']['id']          = $userInfo->getId();
                             $_SESSION['user']['role']        = $userInfo->getIdUserRole();
-                            $_SESSION['user']['lastname']    = $userInfo->getLastname();
-                            $_SESSION['user']['firstname']   = $userInfo->getFirstname();
+                            $_SESSION['user']['username']    = $userInfo->getUsername();
                             $_SESSION['user']['canDownload'] = $userInfo->getRemainingDownload() === null ? false : true;
 
                             /**
-                             * Régénérer le CSRF  (Cross-site request forgery)
+                             * Régénérer le CSRF  (Cross-site request forgery) et l'id de session
                              */
                             (new CSRFHelper())->makeCsrfToken()->saveTokenInSession();
+                            /** Régénérer l'id de session, pour éviter les attaque sur la session de l'utilisateur */
+                            session_regenerate_id();
+
                             FlashMessageService::addSuccessMessage('Connecté avec succès');
                             $this->redirectWithAltoRouter('home');
                         }

@@ -11,15 +11,9 @@ use PDO;
 class UsersScheme extends BaseModel
 {
     protected int $id;
-    protected string $lastName;
-    protected string $firstName;
+    protected string $username;
     protected string $email;
     protected string $password;
-    protected string $country;
-    protected string $zipCode;
-    protected string $city;
-    protected string $address;
-    protected int $houseNumber;
     protected string $registerDate;
     protected ?int $remainingDownload;
     protected ?string $confirmationToken;
@@ -30,7 +24,6 @@ class UsersScheme extends BaseModel
     protected int $id_userRole;
     protected ?string $rememberMeToken;
 
-    private static ?Roles $role = null;
 
     /**
      * Retourne les variables de l'objet
@@ -64,38 +57,19 @@ class UsersScheme extends BaseModel
     /**
      * @return string
      */
-    public function getLastName(): string
+    public function getUsername(): string
     {
-        return $this->lastName;
+        return $this->username;
     }
 
     /**
-     * @param string $lastName
+     * @param string $username
      *
-     * @return self
+     * @return UsersScheme
      */
-    public function setLastName(string $lastName): self
+    public function setUsername(string $username): UsersScheme
     {
-        $this->lastName = $lastName;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * @param string $firstName
-     *
-     * @return self
-     */
-    public function setFirstName(string $firstName): self
-    {
-        $this->firstName = $firstName;
+        $this->username = $username;
         return $this;
     }
 
@@ -134,101 +108,6 @@ class UsersScheme extends BaseModel
     public function setPassword(string $password): self
     {
         $this->password = $password;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCountry(): string
-    {
-        return $this->country;
-    }
-
-    /**
-     * @param string $country
-     *
-     * @return self
-     */
-    public function setCountry(string $country): self
-    {
-        $this->country = $country;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getZipCode(): string
-    {
-        return $this->zipCode;
-    }
-
-    /**
-     * @param string $zipCode
-     *
-     * @return self
-     */
-    public function setZipCode(string $zipCode): self
-    {
-        $this->zipCode = $zipCode;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCity(): string
-    {
-        return $this->city;
-    }
-
-    /**
-     * @param string $city
-     *
-     * @return self
-     */
-    public function setCity(string $city): self
-    {
-        $this->city = $city;
-        return $this;
-    }
-
-    /**
-     * @param string $address Nom de la rue
-     *
-     * @return self
-     */
-    public function setAddress(string $address): self
-    {
-        $this->address = $address;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAddress(): string
-    {
-        return $this->address;
-    }
-
-    /**
-     * @return int
-     */
-    public function getHouseNumber(): int
-    {
-        return $this->houseNumber;
-    }
-
-    /**
-     * @param int $houseNumber
-     *
-     * @return self
-     */
-    public function setHouseNumber(int $houseNumber): self
-    {
-        $this->houseNumber = $houseNumber;
         return $this;
     }
 
@@ -425,22 +304,5 @@ class UsersScheme extends BaseModel
     {
         $this->rememberMeToken = $rememberMeToken;
         return $this;
-    }
-
-    /**
-     * Récupère le rôle associé à l'utilisateur
-     *
-     * @return Roles|false
-     */
-    public function getRole(): Roles|false
-    {
-        if (self::$role === null || self::$role->getId() !== $this->getIdUserRole())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_userrole` WHERE `id` = :idRole');
-            $stmt->bindValue(':idRole', $this->getIdUserRole(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$role = $stmt->fetchObject(Roles::class);
-        }
-        return self::$role;
     }
 }

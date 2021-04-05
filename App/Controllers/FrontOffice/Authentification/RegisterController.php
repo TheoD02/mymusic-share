@@ -55,19 +55,11 @@ class RegisterController extends BaseController
         if ($FV->checkFormIsSend('registerForm'))
         {
             /** Vérification des champs */
-            $FV->verify('lastname')->isNotEmpty()->isAlphaNumeric(['-']);
-            $FV->verify('firstname')->isNotEmpty()->isAlphaNumeric(['-']);
+            $FV->verify('username')->isNotEmpty()->maxLength(50);
             $FV->verify('email')->isNotEmpty()->isEmail();
             $FV->verify('password')->isNotEmpty()->passwordConstraintRegex()
                ->passwordCorrespondTo('confirmPassword')->needReEntry();
             $FV->verify('confirmPassword')->needReEntry();
-            $FV->verify('addressSearch')->isNotEmpty();
-            /** Vérification de l'adresse */
-            $FV->verify('street_number')->isInt();
-            $FV->verify('route')->isNotEmpty()->minLength(4);
-            $FV->verify('locality')->isNotEmpty()->minLength(3);
-            $FV->verify('country')->isNotEmpty()->isAlphaNumeric([], 'both', false)->minLength(3);
-            $FV->verify('postal_code')->isInt();
             $FV->verify('rememberMe')->needToBeChecked()
                ->setCustomInvalidFeedback('Veuillez accepter les conditions.');
 
@@ -77,20 +69,19 @@ class RegisterController extends BaseController
                 /** Création d'une instance d'Users */
                 $userMdl = new Users();
                 /** On stock les données entrée par l'utilisateur dans l'objet */
-                $userMdl->setLastName($FV->getFieldValue('lastname'))
-                        ->setFirstname($FV->getFieldValue('firstname'))
+                $userMdl->setUsername($FV->getFieldValue('username'))
                         ->setEmail($FV->getFieldValue('email'))
-                        ->setPassword(password_hash($FV->getFieldValue('password'), PASSWORD_BCRYPT))
-                        ->setCountry($FV->getFieldValue('country'))
-                        ->setHouseNumber($FV->getFieldValue('street_number'))
-                        ->setAddress($FV->getFieldValue('route'))
-                        ->setZipCode($FV->getFieldValue('postal_code'))
-                        ->setCity($FV->getFieldValue('locality'));
+                        ->setPassword(password_hash($FV->getFieldValue('password'), PASSWORD_BCRYPT));
 
                 /** On vérifie si l'email n'est pas déjà enregistrée en base de données */
                 if ($userMdl->checkEmailExist())
                 {
                     $FV->forceError('email', 'Cet email est déjà utilisée.');
+                }
+                /** On vérifie si le nom d'utilisateur n'est pas déjà enregistrée en base de données */
+                if ($userMdl->checkUsernameExists())
+                {
+                    $FV->forceError('username', 'Ce nom d\'utilisateur est déjà utilisée.');
                 }
                 /** Si toujours pas d'erreur après la vérification de l'email */
                 if ($FV->formIsValid())

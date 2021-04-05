@@ -95,8 +95,16 @@ class PasswordResetController extends BaseController
         $this->render('Authentification/RequestResetPassword', 'Demande de nouveau mot de passe');
     }
 
+    /**
+     * Affiche le formulaire de reinitialisation de mot de passe
+     *
+     * @param string $token
+     *
+     * @throws \Exception
+     */
     public function showPasswordResetForm(string $token): void
     {
+        /** Si le token passer en paramètre n'est pas de la longueur attendu */
         if (strlen($token) !== 100)
         {
             FlashMessageService::addErrorMessage('Le lien de reinitialisation n\'est pas valide.');
@@ -104,8 +112,11 @@ class PasswordResetController extends BaseController
         }
         else
         {
+            /** Récupérer l'utilisateur correspondant au token */
             $userInfo = (new Users())->setPasswordResetToken($token)->getUserByPasswordResetToken();
-            if ($userInfo === false){
+            /** Si on ne trouve pas d'utilisateur correspondant */
+            if ($userInfo === false)
+            {
                 FlashMessageService::addErrorMessage('Le lien demander n\'est pas reconnu.');
                 $this->redirectWithAltoRouter('login');
             }
@@ -113,9 +124,12 @@ class PasswordResetController extends BaseController
         $this->render('Authentification/ResetPasswordForm', 'Reinitialisation du mot de passe.');
     }
 
+    /**
+     * Affiche le formulaire de reinitialisation de mot de passe
+     */
     public function resetPasswordForm(string $token): void
     {
-        /** Vérifie que le token contient bien le nombre de caractères */
+        /** Vérifie que le token contient bien le nombre de caractères attendu */
         if (strlen($token) !== 100)
         {
             FlashMessageService::addErrorMessage('Le lien de reinitialisation n\'est pas valide.');

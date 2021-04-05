@@ -108,31 +108,35 @@
                 <div class="col-md-10 offset-md-1 py-4 px-5">
                     <div class="row">
                         <div class="col-md-12">
-                            <h2 class="text-center">Fonctionnel avec votre logiciel de DJing favoris !</h2>
+                            <h2 class="text-center">Fonctionnel avec votre logiciel de Production et de DJing favoris !</h2>
                         </div>
                         <div class="col-md-12">
                             <div class="row d-flex justify-content-around">
-                                <div class="col-6 col-md-4 col-lg-3 col-xl-2 d-flex justify-content-center flex-column p-5 img-software">
+                                <div class="col-6 col-lg-4 col-xl-3 d-flex justify-content-center flex-column p-2 p-md-5 img-software">
                                     <img src="/assets/img/info-engineprime.png" alt="" class="img-fluid shadow info-software-image">
                                     <span class="align-self-center pt-2"><strong>Engine Prime</strong></span>
                                 </div>
-                                <div class="col-6 col-md-4 col-lg-3 col-xl-2 d-flex justify-content-center flex-column p-5 img-software">
+                                <div class="col-6 col-lg-4 col-xl-3 d-flex justify-content-center flex-column p-2 p-md-5 img-software">
+                                    <img src="/assets/img/info-flstudio.png" alt="" class="img-fluid shadow info-software-image">
+                                    <span class="align-self-center pt-2"><strong>FL Studio</strong></span>
+                                </div>
+                                <div class="col-6 col-lg-4 col-xl-3 d-flex justify-content-center flex-column p-2 p-md-5 img-software">
                                     <img src="/assets/img/info-traktor.png" alt="" class="img-fluid shadow info-software-image">
                                     <span class="align-self-center pt-2"><strong>Traktor</strong></span>
                                 </div>
-                                <div class="col-6 col-md-4 col-lg-3 col-xl-2 d-flex justify-content-center flex-column p-5 img-software">
+                                <div class="col-6 col-lg-4 col-xl-3 d-flex justify-content-center flex-column p-2 p-md-5 img-software">
                                     <img src="/assets/img/info-serato.png" alt="" class="img-fluid shadow info-software-image">
                                     <span class="align-self-center pt-2"><strong>Serato</strong></span>
                                 </div>
-                                <div class="col-6 col-md-4 col-lg-3 col-xl-2 d-flex justify-content-center flex-column p-5 img-software">
+                                <div class="col-6 col-lg-4 col-xl-3 d-flex justify-content-center flex-column p-2 p-md-5 img-software">
                                     <img src="/assets/img/info-rkb.png" alt="" class="img-fluid shadow info-software-image">
                                     <span class="align-self-center pt-2"><strong>RekordBox</strong></span>
                                 </div>
-                                <div class="col-6 col-md-4 col-lg-3 col-xl-2 d-flex justify-content-center flex-column p-5 img-software">
+                                <div class="col-6 col-lg-4 col-xl-3 d-flex justify-content-center flex-column p-2 p-md-5 img-software">
                                     <img src="/assets/img/info-vdj.png" alt="" class="img-fluid shadow info-software-image">
                                     <span class="align-self-center pt-2"><strong>Virtual DJ</strong></span>
                                 </div>
-                                <div class="col-6 col-md-4 col-lg-3 col-xl-2 d-flex justify-content-center flex-column p-5 img-software">
+                                <div class="col-6 col-lg-4 col-xl-3 d-flex justify-content-center flex-column p-2 p-md-5 img-software">
                                     <img src="/assets/img/info-ableton.png" alt="" class="img-fluid shadow info-software-image">
                                     <span class="align-self-center pt-2"><strong>Ableton Live</strong></span>
                                 </div>
@@ -289,4 +293,4 @@
             </div>
         </div>
     </div>-->
-</div>
+    </div>

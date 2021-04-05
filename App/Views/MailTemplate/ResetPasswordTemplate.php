@@ -5,7 +5,7 @@ use App\Models\Users;
 
 assert($obj instanceof Users);
 ?>
-<p class="h2">Bonjour <?= $obj->getLastName()() ?>,</p>
+<p class="h2">Bonjour <?= $obj->getUsername() ?>,</p>
 
 <p>Cet email à été envoyé suite à une demande de reinitialisation de mot de passe sur votre
    compte.</p>

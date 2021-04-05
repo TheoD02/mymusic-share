@@ -8,7 +8,7 @@ if (musicUploadForm !== null) {
     let musicFile       = musicUploadForm.querySelector('#musicFile'),
         tempMusicFile   = musicUploadForm.querySelector('#tempMusicFile'),
         titleInput      = musicUploadForm.querySelector('#title'),
-        artistsInput    = musicUploadForm.querySelector('#artists'),
+        artistsInput    = musicUploadForm.querySelector('#artistsName'),
         songBPM         = musicUploadForm.querySelector('#bpm'),
         songBitrate     = musicUploadForm.querySelector('#bitrate'),
         songKey         = musicUploadForm.querySelector('#id_musicKey'),
@@ -24,7 +24,7 @@ if (musicUploadForm !== null) {
             /** Se servir de la librairie Tagify sur l'input artists pour une saisie plus simple */
             tagify = new Tagify(artistsInput, {
                 originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
-                whitelist               : ['aaa', 'aaab', 'aaabb', 'aaabc', 'aaabd', 'aaabe', 'aaac', 'aaacc'],
+                whitelist               : ['Eminem', 'zadad', 'machin'],
                 dropdown                : {
                     classname     : 'color-blue',
                     enabled       : 1,              // show the dropdown immediately on focus
@@ -86,7 +86,7 @@ if (musicUploadForm !== null) {
                     /** Se servir de la librairie Tagify sur l'input artists pour une saisie plus simple */
                     tagify = new Tagify(artistsInput, {
                         originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
-                        whitelist               : ['aaa', 'aaab', 'aaabb', 'aaabc', 'aaabd', 'aaabe', 'aaac', 'aaacc'],
+                        whitelist               : ['Eminem', 'zadad', 'machin'],
                         dropdown                : {
                             classname     : 'color-blue',
                             enabled       : 1,              // show the dropdown immediately on focus

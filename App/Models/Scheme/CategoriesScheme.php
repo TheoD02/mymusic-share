@@ -15,8 +15,6 @@ class CategoriesScheme extends BaseModel
     protected string $slug;
     protected string $imgPath;
 
-    private static array|false|null $track = null;
-
     /**
      * Retourne les variables de l'objet
      *
@@ -101,26 +99,5 @@ class CategoriesScheme extends BaseModel
     {
         $this->imgPath = $imgPath;
         return $this;
-    }
-
-    /**
-     * @return Tracks[]|false
-     */
-    public function getTracks(): array|false
-    {
-        if (self::$track === null|| self::$track->getIdCategories() !== $this->getId())
-        {
-            $stmt = $this->prepare('SELECT *, GROUP_CONCAT(`myokndefht_artists`.`name` SEPARATOR \', \') AS `artistsName` FROM `myokndefht_tracks` 
-                                        INNER JOIN `myokndefht_artiststracks` ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
-                                        INNER JOIN `myokndefht_artists` ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
-                                        WHERE 
-                                            `id_categories` = :idCategory AND `isPending` = 0
-                                        GROUP BY
-                                            `myokndefht_tracks`.`id`');
-            $stmt->bindValue(':idCategory', $this->getId(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$track = $stmt->fetchAll(PDO::FETCH_CLASS, Tracks::class);
-        }
-        return self::$track;
     }
 }

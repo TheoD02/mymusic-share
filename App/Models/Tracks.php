@@ -14,37 +14,36 @@ class Tracks extends TracksScheme
      * Retourne la liste des musique
      *
      * @param bool $getPendingTracks Récupérer les musique en attente si true
+     * @param int  $startOffset
+     * @param int  $limit
      *
      * @return Tracks[]|false
      */
-    public function getTracksList(bool $getPendingTracks = false): array|false
+    public function getTracksList(bool $getPendingTracks = false, int $startOffset = 0, int $limit = 100): array|false
     {
         $stmt = $this->prepare('SELECT
                                         `myokndefht_tracks`.`id`,
-                                        `title`,
-                                        `bpm`,
-                                        `bitrate`,
-                                        `releaseDate`,
-                                        `path`,
-                                        `hash`,
-                                        `isPending`,
-                                        GROUP_CONCAT(\'<a href="\', `myokndefht_artists`.`id`, \'">\', `name`, \'</a>\' SEPARATOR \',  \') AS \'artistsName\',
+                                        `title`, `bpm`, `bitrate`, `releaseDate`, `path`, `hash`, `isPending`, `listenCount`, `id_musicKey`, `id_categories`,
+                                        GROUP_CONCAT(DISTINCT `myokndefht_artists`.`name` SEPARATOR \', \') AS `artistsName`,
+                                        COUNT(DISTINCT `myokndefht_usersdownloadedtracks`.`id`) AS `downloadCount`,
                                         `myokndefht_musickey`.`musicKey`,
-                                        `id_categories`,
-                                        `id_musicKey`
+                                        `myokndefht_categories`.`id` AS `categoryId`, `myokndefht_categories`.`name` AS `categoryName`
                                     FROM
                                         `myokndefht_tracks`
                                         INNER JOIN `myokndefht_artiststracks`
                                                    ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
                                         INNER JOIN `myokndefht_artists`
-                                                   ON `myokndefht_artists`.`id` = `myokndefht_artiststracks`.`id_artists`
-                                        INNER JOIN `myokndefht_musickey`
-                                                   ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+                                                   ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
+                                        LEFT JOIN `myokndefht_usersdownloadedtracks`
+                                                  ON `myokndefht_tracks`.`id` = `myokndefht_usersdownloadedtracks`.`id_tracks`
+                                        INNER JOIN `myokndefht_musickey` ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+                                        INNER JOIN `myokndefht_categories` ON `myokndefht_tracks`.`id_categories` = `myokndefht_categories`.`id`
                                     ' . ($getPendingTracks ? '' : 'WHERE `isPending` = 0') . '
                                     GROUP BY
                                         `myokndefht_tracks`.`id`
                                     ORDER BY
-                                        `myokndefht_tracks`.`releaseDate` DESC');
+                                        `myokndefht_tracks`.`releaseDate` DESC 
+                                    LIMIT ' . $startOffset . ', ' . $limit);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
@@ -52,65 +51,67 @@ class Tracks extends TracksScheme
     /**
      * Retourne la liste des musique en attente de mise en ligne
      *
+     * @param int $startOffset
+     * @param int $limit
+     *
      * @return Tracks[]|false
      */
-    public function getPendingTracksList(): array|false
+    public function getPendingTracksList(int $startOffset = 0, int $limit = 100): array|false
     {
         $stmt = $this->prepare('SELECT
                                         `myokndefht_tracks`.`id`,
-                                        `title`,
-                                        `bpm`,
-                                        `bitrate`,
-                                        `releaseDate`,
-                                        `path`,
-                                        `hash`,
-                                        `isPending`,
-                                        GROUP_CONCAT(\'<a href="\', `myokndefht_artists`.`id`, \'">\', `name`, \'</a>\' SEPARATOR \',  \') AS \'artistsName\',
-                                        `id_categories`,
-                                        `id_musicKey`
+                                        `title`, `bpm`, `bitrate`, `releaseDate`, `path`, `hash`, `isPending`, `listenCount`, `id_musicKey`, `id_categories`,
+                                        GROUP_CONCAT(DISTINCT `myokndefht_artists`.`name` SEPARATOR \', \') AS `artistsName`,
+                                        COUNT(DISTINCT `myokndefht_usersdownloadedtracks`.`id`) AS `downloadCount`,
+                                        `myokndefht_musickey`.`musicKey`,
+                                        `myokndefht_categories`.`id` AS `categoryId`, `myokndefht_categories`.`name` AS `categoryName`
                                     FROM
                                         `myokndefht_tracks`
                                         INNER JOIN `myokndefht_artiststracks`
                                                    ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
                                         INNER JOIN `myokndefht_artists`
-                                                   ON `myokndefht_artists`.`id` = `myokndefht_artiststracks`.`id_artists`
-                                        INNER JOIN `myokndefht_musickey`
-                                                   ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
-                                     WHERE `isPending` = 1
+                                                   ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
+                                        LEFT JOIN `myokndefht_usersdownloadedtracks`
+                                                  ON `myokndefht_tracks`.`id` = `myokndefht_usersdownloadedtracks`.`id_tracks`
+                                        INNER JOIN `myokndefht_musickey` ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+                                        INNER JOIN `myokndefht_categories` ON `myokndefht_tracks`.`id_categories` = `myokndefht_categories`.`id`
+                                        WHERE `isPending` = 1                                    
                                     GROUP BY
                                         `myokndefht_tracks`.`id`
                                     ORDER BY
-                                        `myokndefht_tracks`.`releaseDate` DESC');
+                                        `myokndefht_tracks`.`releaseDate` DESC
+                                    LIMIT ' . $startOffset . ', ' . $limit);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
 
     /**
+     * Renvoi une liste de musique d'une catégorie
      *
+     * @param int $startOffset
+     * @param int $limit
+     *
+     * @return Tracks[]|false
      */
-    public function getTrackListByCategories(int $startOffset, int $limit)
+    public function getTrackListByCategories(int $startOffset, int $limit): array|false
     {
         $stmt = $this->prepare('SELECT
                                         `myokndefht_tracks`.`id`,
-                                        `title`,
-                                        `bpm`,
-                                        `bitrate`,
-                                        `releaseDate`,
-                                        `path`,
-                                        `hash`,
-                                        `isPending`,
-                                        GROUP_CONCAT(\'<a href="\', `myokndefht_artists`.`id`, \'">\', `name`, \'</a>\' SEPARATOR \',  \') AS \'artistsName\',
+                                        `title`, `bpm`, `bitrate`, `releaseDate`, `path`, `hash`, `isPending`, `listenCount`, `id_musicKey`, `id_categories`,
+                                        GROUP_CONCAT(DISTINCT `myokndefht_artists`.`name` SEPARATOR \', \') AS `artistsName`,
+                                        COUNT(DISTINCT `myokndefht_usersdownloadedtracks`.`id`) AS `downloadCount`,
                                         `myokndefht_musickey`.`musicKey`,
-                                        `id_categories`,
-                                        `id_musicKey`
+                                        `myokndefht_categories`.`id` AS `categoryId`, `myokndefht_categories`.`name` AS `categoryName`
                                     FROM
                                         `myokndefht_tracks`
                                         INNER JOIN `myokndefht_artiststracks`
                                                    ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
                                         INNER JOIN `myokndefht_artists`
-                                                   ON `myokndefht_artists`.`id` = `myokndefht_artiststracks`.`id_artists`
-                                        INNER JOIN `myokndefht_musickey`
-                                                   ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+                                                   ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
+                                        LEFT JOIN `myokndefht_usersdownloadedtracks`
+                                                  ON `myokndefht_tracks`.`id` = `myokndefht_usersdownloadedtracks`.`id_tracks`
+                                        INNER JOIN `myokndefht_musickey` ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+                                        INNER JOIN `myokndefht_categories` ON `myokndefht_tracks`.`id_categories` = `myokndefht_categories`.`id`
                                     WHERE `id_categories` = :idCategory AND `isPending` = 0
                                     GROUP BY
                                         `myokndefht_tracks`.`id`
@@ -161,10 +162,24 @@ class Tracks extends TracksScheme
      */
     public function getTrackById(): Tracks|false
     {
-        $stmt = $this->prepare('SELECT *, GROUP_CONCAT(`myokndefht_artists`.`name` SEPARATOR \', \') AS `artists` FROM `myokndefht_tracks` 
-                                        INNER JOIN `myokndefht_artiststracks` ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
-                                        INNER JOIN `myokndefht_artists` ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
-                                        WHERE `myokndefht_tracks`.`id` = :id');
+        $stmt = $this->prepare('SELECT
+                                        `myokndefht_tracks`.`id`,
+                                        `title`, `bpm`, `bitrate`, `releaseDate`, `path`, `hash`, `isPending`, `listenCount`, `id_musicKey`, `id_categories`,
+                                        GROUP_CONCAT(DISTINCT `myokndefht_artists`.`name` SEPARATOR \', \') AS `artistsName`,
+                                        COUNT(DISTINCT `myokndefht_usersdownloadedtracks`.`id`) AS `downloadCount`,
+                                        `myokndefht_musickey`.`musicKey`,
+                                        `myokndefht_categories`.`id` AS `categoryId`, `myokndefht_categories`.`name` AS `categoryName`
+                                    FROM
+                                        `myokndefht_tracks`
+                                        INNER JOIN `myokndefht_artiststracks`
+                                                   ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
+                                        INNER JOIN `myokndefht_artists`
+                                                   ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
+                                        LEFT JOIN `myokndefht_usersdownloadedtracks`
+                                                  ON `myokndefht_tracks`.`id` = `myokndefht_usersdownloadedtracks`.`id_tracks`
+                                        INNER JOIN `myokndefht_musickey` ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+                                        INNER JOIN `myokndefht_categories` ON `myokndefht_tracks`.`id_categories` = `myokndefht_categories`.`id`
+                                    WHERE `myokndefht_tracks`.`id` = :id');
         $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchObject(self::class);
@@ -189,6 +204,11 @@ class Tracks extends TracksScheme
         return $stmt->execute();
     }
 
+    /**
+     * Retourne les id's des artistes
+     *
+     * @return array|bool
+     */
     public function getArtistsIds(): array|bool
     {
         $stmt = $this->prepare('SELECT `id_artists` FROM `myokndefht_tracks` INNER JOIN `myokndefht_artiststracks` ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks` WHERE `myokndefht_tracks`.`id` = :id');
@@ -204,26 +224,27 @@ class Tracks extends TracksScheme
      */
     public function getMp3ByHash(): Tracks|false
     {
-        $stmt = $this->prepare('SELECT *, GROUP_CONCAT(`myokndefht_artists`.`name` SEPARATOR \', \') AS `artistsName` FROM `myokndefht_tracks` 
-                                        INNER JOIN `myokndefht_artiststracks` ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
-                                        INNER JOIN `myokndefht_artists` ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
-                                        WHERE 
-                                            `hash` = :hash
-                                        GROUP BY
-                                            `myokndefht_tracks`.`id`');
+        $stmt = $this->prepare('SELECT
+                                        `myokndefht_tracks`.`id`,
+                                        `title`, `bpm`, `bitrate`, `releaseDate`, `path`, `hash`, `isPending`, `listenCount`, `id_musicKey`, `id_categories`,
+                                        GROUP_CONCAT(DISTINCT `myokndefht_artists`.`name` SEPARATOR \', \') AS `artistsName`,
+                                        COUNT(DISTINCT `myokndefht_usersdownloadedtracks`.`id`) AS `downloadCount`,
+                                        `myokndefht_musickey`.`musicKey`,
+                                        `myokndefht_categories`.`id` AS `categoryId`, `myokndefht_categories`.`name` AS `categoryName`
+                                    FROM
+                                        `myokndefht_tracks`
+                                        INNER JOIN `myokndefht_artiststracks`
+                                                   ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
+                                        INNER JOIN `myokndefht_artists`
+                                                   ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
+                                        LEFT JOIN `myokndefht_usersdownloadedtracks`
+                                                  ON `myokndefht_tracks`.`id` = `myokndefht_usersdownloadedtracks`.`id_tracks`
+                                        INNER JOIN `myokndefht_musickey` ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+                                        INNER JOIN `myokndefht_categories` ON `myokndefht_tracks`.`id_categories` = `myokndefht_categories`.`id`
+                                    WHERE `myokndefht_tracks`.`hash` = :hash');
         $stmt->bindValue(':hash', $this->getHash(), PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchObject(self::class);
-    }
-
-    /**
-     * @return bool
-     */
-    public function incrementDownloadCount(): bool
-    {
-        $stmt = $this->prepare('UPDATE `myokndefht_tracks` SET `downloadCount` = `downloadCount` + 1 WHERE `id` = :id');
-        $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
-        return $stmt->execute();
     }
 
     /**
@@ -246,6 +267,31 @@ class Tracks extends TracksScheme
     public function getTotalNumberOfTracks(): int
     {
         $stmt = $this->query('SELECT COUNT(`id`) AS `tracksCount` FROM `myokndefht_tracks`');
+        $stmt->execute();
+        return $stmt->fetch()->tracksCount;
+    }
+
+    /**
+     * Retourne le nombre de musique totale d'une catégorie
+     *
+     * @return int
+     */
+    public function getTotalNumberOfTracksInCategory(): int
+    {
+        $stmt = $this->prepare('SELECT COUNT(`id`) AS `tracksCount` FROM `myokndefht_tracks` WHERE `id_categories` = :idCategory');
+        $stmt->bindValue(':idCategory', $this->getIdCategories(), PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch()->tracksCount;
+    }
+
+    /**
+     * Retourne le nombre de musique en attente
+     *
+     * @return int
+     */
+    public function getTotalNumberOfPendingTracks(): int
+    {
+        $stmt = $this->query('SELECT COUNT(`id`) AS `tracksCount` FROM `myokndefht_tracks` WHERE `isPending` = 1');
         return $stmt->fetch()->tracksCount;
     }
 
@@ -258,6 +304,97 @@ class Tracks extends TracksScheme
     {
         $stmt = $this->prepare('SELECT COUNT(`id`) AS `tracksCount` FROM `myokndefht_tracks` WHERE `id_categories` = :idCategory');
         $stmt->bindValue(':idCategory', $this->getIdCategories(), PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetch()->tracksCount;
+    }
+
+    /**
+     * Retourne le top des musique écouter selon la limite
+     *
+     * @param int $limit Nombre de musique maximum à récupérer
+     *
+     * @return Tracks[]|false
+     */
+    public function getTopListenedTracks(int $limit): array|false
+    {
+        $stmt = $this->prepare('CALL `getTopListened`(' . $limit . ');');
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
+    }
+
+    /**
+     * Retourne le top des musique télécharger selon la limite
+     *
+     * @param int $limit Nombre de musique maximum à récupérer
+     *
+     * @return Tracks[]|false
+     */
+    public function getTopDownloadedTracks(int $limit): array|false
+    {
+        $stmt = $this->prepare('CALL `getTopDownloaded`(' . $limit . ');');
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
+    }
+
+    /**
+     * Retourne un object avec l'id de la musique via le Hash
+     *
+     * @return Tracks|false
+     */
+    public function getTrackIdByHash(): Tracks|false
+    {
+        $stmt = $this->prepare('SELECT `id` FROM `myokndefht_tracks` WHERE `hash` = :hash');
+        $stmt->bindValue(':hash', $this->getHash(), PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchObject(self::class);
+    }
+
+    /**
+     * Recherche des termes dans une musique (titre, artiste)
+     *
+     * @param string $terms
+     *
+     * @return Tracks[]|false
+     */
+    public function searchTrackByTerms(string $terms): array|false
+    {
+        $query = 'SELECT 
+                                        `myokndefht_tracks`.`id`,
+                                        `title`, `bpm`, `bitrate`, `releaseDate`, `path`, `hash`, `isPending`, `listenCount`, `id_musicKey`, `id_categories`,
+                                        GROUP_CONCAT(DISTINCT `myokndefht_artists`.`name` SEPARATOR \', \') AS `artistsName`,
+                                        COUNT(DISTINCT `myokndefht_usersdownloadedtracks`.`id`) AS `downloadCount`,
+                                        `myokndefht_musickey`.`musicKey`,
+                                        `myokndefht_categories`.`id` AS `categoryId`, `myokndefht_categories`.`name` AS `categoryName`
+                                    FROM
+                                        `myokndefht_tracks`
+                                        INNER JOIN `myokndefht_artiststracks`
+                                                   ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
+                                        INNER JOIN `myokndefht_artists`
+                                                   ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
+                                        LEFT JOIN `myokndefht_usersdownloadedtracks`
+                                                  ON `myokndefht_tracks`.`id` = `myokndefht_usersdownloadedtracks`.`id_tracks`
+                                        INNER JOIN `myokndefht_musickey` ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+                                        INNER JOIN `myokndefht_categories` ON `myokndefht_tracks`.`id_categories` = `myokndefht_categories`.`id` WHERE ';
+
+        $bindedValue        = [];
+        $termCount          = 0;
+        $arrayOfSearchTerms = explode(' ', $terms);
+        foreach ($arrayOfSearchTerms as $term)
+        {
+            if ($termCount !== 0)
+            {
+                $query .= ' OR ';
+            }
+            $query                               .= ' `myokndefht_tracks`.`title`' . ' LIKE :term' . $termCount . ' OR `myokndefht_artists`.`name` LIKE :term' . $termCount;
+            $bindedValue[':term' . $termCount++] = '%' . $term . '%';
+        }
+        $query .= ' GROUP BY `myokndefht_artiststracks`.`id_tracks`';
+        $stmt  = $this->prepare($query);
+        foreach ($bindedValue as $bindName => $bindValue)
+        {
+            $stmt->bindValue($bindName, $bindValue, PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
 }

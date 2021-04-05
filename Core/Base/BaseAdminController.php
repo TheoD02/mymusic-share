@@ -9,6 +9,7 @@ use Core\UserHelper;
 
 class BaseAdminController extends BaseController
 {
+    /** Vérifie que l'utilisateur soit authentifié en tant qu'admin */
     public function __construct()
     {
         parent::__construct();

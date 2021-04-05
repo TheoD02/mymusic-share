@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Categories;
+use Core\PaginationService;
 
 /** @var Categories[]|false $categoriesList */
 ?>
@@ -12,12 +13,12 @@ use App\Models\Categories;
                 <div class="row">
                     <?php if (!empty($categoriesList)) : ?>
                     <div class="col-md-12 d-flex flex-row-reverse">
-                        <form method="get">
+                        <form id="categoriesElementSelector" action="<?= AltoRouter::getRouterInstance()->generate('categoriesList', ['pageNumber' => PaginationService::getCurrentPage(), 'numberOfElementPerPage' => 4]) ?>" method="get">
                             <div class="form-group">
                                 <label for="numberOfElementPerPage">Nombre d'éléments par page</label>
-                                <select onchange="this.form.submit()" name="numberOfElementPerPage" class="form-select" id="numberOfElementPerPage">
+                                <select name="numberOfElementPerPage" class="form-select" id="numberOfElementPerPage">
                                     <?php for ($numberOfElements = 8; $numberOfElements <= 48; $numberOfElements += 8): ?>
-                                        <option value="<?= $numberOfElements ?>" <?= isset($_GET['numberOfElementPerPage']) && $_GET['numberOfElementPerPage'] == $numberOfElements ? 'selected' : '' ?>><?= $numberOfElements ?></option>
+                                        <option value="<?= $numberOfElements ?>" <?= $numberOfElementPerPage == $numberOfElements ? 'selected' : '' ?>><?= $numberOfElements ?></option>
                                     <?php endfor; ?>
                                 </select>
                             </div>
@@ -44,22 +45,13 @@ use App\Models\Categories;
                     <?php endforeach; ?>
                 </div>
                 <nav aria-label="Page navigation example" class="my-5">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item">
-                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">3</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
+                    <ul class="pagination">
+                        <?php foreach (PaginationService::getPagination() as $pageNumber) : ?>
+                            <li class="page-item">
+                                <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                         ->generate(AltoRouter::getRouterInstance()->match()['name'], ['pageNumber' => $pageNumber]) ?>"><?= $pageNumber ?></a>
+                            </li>
+                        <?php endforeach; ?>
                     </ul>
                 </nav>
                 <?php else: ?>

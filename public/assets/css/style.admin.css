@@ -135,8 +135,31 @@ nav
 
 .sidebar-heading
 {
-    font-size      : .75rem;
+    background     : #153060;
+    padding        : 1.25rem;
+    margin         : 0 0.5rem;
+    border-radius  : 0.25rem;
+    opacity        : 0.75;
+    font-size      : 1rem;
     text-transform : uppercase;
+}
+
+li.nav-item a,
+li.nav-item button
+{
+    background    : #202832;
+    padding       : 0.75rem;
+    margin        : 0.5rem 0.5rem;
+    border-radius : 1rem;
+    opacity       : 0.75;
+    border        : 1px solid black;
+    color         : white;
+}
+
+li.nav-item a:hover,
+li.nav-item button:hover
+{
+    background : #4C70A0;
 }
 
 /*
@@ -174,4 +197,9 @@ nav
 .swal2-popup.swal2-toast a
 {
     color : #029AFF !important;
+}
+
+.page-item .page-link
+{
+    color : black !important;
 }

@@ -25,24 +25,24 @@ class InstalledVersions
 private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => '1.0.0+no-version-set',
-    'version' => '1.0.0.0',
+    'pretty_version' => 'dev-master',
+    'version' => 'dev-master',
     'aliases' => 
     array (
     ),
-    'reference' => NULL,
+    'reference' => 'e5621b290e403d77c8f0afd06886c349dc3aa4b9',
     'name' => 'administrator/mymusic-share.local',
   ),
   'versions' => 
   array (
     'administrator/mymusic-share.local' => 
     array (
-      'pretty_version' => '1.0.0+no-version-set',
-      'version' => '1.0.0.0',
+      'pretty_version' => 'dev-master',
+      'version' => 'dev-master',
       'aliases' => 
       array (
       ),
-      'reference' => NULL,
+      'reference' => 'e5621b290e403d77c8f0afd06886c349dc3aa4b9',
     ),
     'altorouter/altorouter' => 
     array (

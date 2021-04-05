@@ -3,7 +3,7 @@
 
 namespace App\Models\Scheme;
 
-use App\Models\Subscriptions;
+use App\Models\DownloadListTracks;
 use App\Models\Users;
 use Core\Base\BaseModel;
 use PDO;
@@ -13,8 +13,6 @@ class UsersDownloadListsScheme extends BaseModel
     protected int $id;
     protected string $name;
     protected int $id_users;
-
-    private static ?Users $user = null;
 
     /**
      * Retourne les variables de l'objet
@@ -75,26 +73,11 @@ class UsersDownloadListsScheme extends BaseModel
     /**
      * @param int $id_users
      *
-     * @return self
+     * @return UsersDownloadListsScheme
      */
-    public function setIdUsers(int $id_users): self
+    public function setIdUsers(int $id_users): UsersDownloadListsScheme
     {
         $this->id_users = $id_users;
         return $this;
-    }
-
-    /**
-     * @return Users|false
-     */
-    public function getUser(): Users|false
-    {
-        if (self::$user === null || self::$user->getId() !== $this->getIdUsers())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_users` WHERE `id` = :idUser');
-            $stmt->bindValue(':idUser', $this->getIdUsers(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$user = $stmt->fetchObject(Subscriptions::class);
-        }
-        return self::$user;
     }
 }

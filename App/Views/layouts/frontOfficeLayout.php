@@ -3,7 +3,7 @@ use Core\FlashMessageService;
 use Core\UserHelper;
 
 $router     = AltoRouter::getRouterInstance();
-$showPlayer = str_contains($_SERVER['REQUEST_URI'], 'category') || str_contains($_SERVER['REQUEST_URI'], 'new-release');
+$showPlayer = str_contains($_SERVER['REQUEST_URI'], 'category') || str_contains($_SERVER['REQUEST_URI'], 'new-release') || str_contains($_SERVER['REQUEST_URI'], 'top-50') || str_contains($_SERVER['REQUEST_URI'], 'search') || str_contains($_SERVER['REQUEST_URI'], '/profile/download-lists/');
 ?>
 <!doctype html>
 <html lang="fr" dir="ltr">
@@ -33,9 +33,9 @@ $showPlayer = str_contains($_SERVER['REQUEST_URI'], 'category') || str_contains(
     <div id="alerts" class="d-none">
         <?= FlashMessageService::showAllMessages() ?>
     </div>
-    <nav class="navbar navbar-expand-lg navbar-light" id="navbar">
+    <nav class="navbar navbar-expand-xl navbar-light" id="navbar">
         <div class="container-fluid">
-            <a class="navbar-brand" href="<?= $router->generate('home') ?>">MyMusic Share</a>
+            <a class="navbar-brand" href="<?= $router->generate('home') ?>"><img id="brandLogo" src="/assets/img/logo.png" alt=""></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -52,26 +52,51 @@ $showPlayer = str_contains($_SERVER['REQUEST_URI'], 'category') || str_contains(
                         <a class="nav-link" href="<?= $router->generate('newRelease') ?>">Nouveautés</a>
                     </li>
                     <li class="nav-item">
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" style="color: #DAE0E7 !important" type="button" id="dropdownMenuButton2"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                Top 50
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
+                                <li>
+                                    <a class="dropdown-item" href="<?= $router->generate('top50Listened') ?>">
+                                        Top 50 des musiques écouter
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="<?= $router->generate('top50Downloaded') ?>">
+                                        Top 50 des musiques télécharger
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="nav-link " href="<?= $router->generate('contact') ?>">Contact</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Rechercher" aria-label="Rechercher">
+                <form class="d-flex" action="<?= $router->generate('searchTrack') ?>" method="post">
+                    <input class="form-control me-2" name="searchTerms" id="searchTerms" type="search" placeholder="Rechercher" aria-label="Rechercher">
                     <?= CSRFHelper::generateCsrfHiddenInput() ?>
-                    <button class="btn btn-outline-success" type="submit">
+                    <button class="btn btn-outline-success" name="searchTrackForm" type="submit">
                         <i class="mdi mdi-magnify"></i>
                     </button>
                 </form>
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav mb-2 mb-lg-0">
                     <?php if (UserHelper::isAuthAsAnyRole()) : ?>
-                        <div class="dropdown">
+                        <div class="dropdown mx-1">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown"
                                     aria-expanded="false">
-                                Connecté en tant que <?= $_SESSION['user']['lastname'] . ' ' . $_SESSION['user']['firstname'] ?>
+                                Connecté en tant que <?= $_SESSION['user']['username'] ?>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="dropdownMenuButton2">
                                 <li>
-                                    <a class="dropdown-item" href="<?= $router->generate('profileCurrentSubscription') ?>">
+                                    <a class="dropdown-item" href="<?= $router->generate('profileInformations') ?>">
                                         Mon compte
                                     </a>
                                 </li>
@@ -117,8 +142,8 @@ $showPlayer = str_contains($_SERVER['REQUEST_URI'], 'category') || str_contains(
                 </div>
                 <div class="col d-flex flex-column justify-content-center" id="container-informations" style="padding-bottom: 2rem;">
                     <div class="d-flex flex-column" id="trackinfo">
-                        <span id="song-data-title" class="text-center">Text</span>
-                        <span id="song-data-artists" class="text-center">Text</span>
+                        <span id="song-data-title" class="text-center">--</span>
+                        <span id="song-data-artists" class="text-center">--</span>
                     </div>
                     <div id="progress-container">
                         <div id="progress">
@@ -159,8 +184,8 @@ $showPlayer = str_contains($_SERVER['REQUEST_URI'], 'category') || str_contains(
     <script src="/assets/js/jsmediatags.min.js"></script>
     <!-- JS -->
     <script src="/assets/js/main.both.js"></script>
-    <script src="/assets/js/main.front.js"></script>
+    <script type="module" src="/assets/js/main.front.js"></script>
     <!-- Player JS -->
-    <script src="/assets/js/player.js"></script>
+    <!--    <script src="/assets/js/player.js"></script>-->
 </body>
 </html>

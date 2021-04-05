@@ -30,9 +30,16 @@ class EmailConfirmationController extends BaseController
         }
     }
 
+    /**
+     * Vérification du compte utilisateur via email
+     *
+     * @param string $token token de vérification
+     * @param string $email email de l'utilisateur
+     *
+     * @throws \Exception
+     */
     public function accountVerificationAction(string $token, string $email): void
     {
-
         /** Vérifie que le token contient bien le nombre de caractères */
         if (strlen($token) !== 100)
         {
@@ -90,6 +97,14 @@ class EmailConfirmationController extends BaseController
 
     }
 
+    /**
+     * Permet de renvoyer un email avec un nouveau lien de vérification
+     *
+     * @param string $email
+     * @param int    $id
+     *
+     * @throws \Exception
+     */
     public function resendConfirmationToken(string $email, int $id): void
     {
         /** Récupérer un utilisateur via son ID */
@@ -111,6 +126,8 @@ class EmailConfirmationController extends BaseController
                 $mailer = new Mailer();
                 $mailer->setTo($userInfo->getEmail())
                        ->setSubject('Veuillez confirmer votre compte');
+
+                /** Envoyer l'email avec le nouveau lien de vérification */
                 if ($mailer->sendMail('ConfirmAccount', $userInfo))
                 {
                     FlashMessageService::addSuccessMessage('Un email avec un nouveau lien de confirmation vous à été envoyé.');

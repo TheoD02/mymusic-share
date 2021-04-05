@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Users;
+use Core\PaginationService;
 
 /** @var Users[]|false $usersList */
 ?>
@@ -11,8 +12,7 @@ use App\Models\Users;
             <table class="table table-striped table-dark text-center">
                 <thead>
                     <tr>
-                        <th>Nom</th>
-                        <th>Prénom</th>
+                        <th>Nom d'utilisateur</th>
                         <th>Email</th>
                         <th>Statut du compte</th>
                         <th>Actions</th>
@@ -21,8 +21,7 @@ use App\Models\Users;
                 <tbody>
                     <?php foreach ($usersList as $user) : ?>
                         <tr class="align-middle">
-                            <td><?= $user->getLastName() ?></td>
-                            <td><?= $user->getFirstName() ?></td>
+                            <td><?= $user->getUsername() ?></td>
                             <td><?= $user->getEmail() ?></td>
                             <td><?= $user->isConfirmed ? '<i class="mdi mdi-account-check text-success"></i>' : '<i class="mdi mdi-clock-alert text-warning"></i>' ?></td>
                             <td>
@@ -46,6 +45,29 @@ use App\Models\Users;
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            <nav aria-label="Page navigation example" class="my-5">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                 ->generate(AltoRouter::getRouterInstance()
+                                                                                      ->match()['name'], ['pageNumber' => 1]) ?>"><?= 1 ?></a>
+                    </li>
+                    <?php foreach (PaginationService::getPagination() as $pageNumber) : ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                     ->generate(AltoRouter::getRouterInstance()
+                                                                                          ->match()['name'], ['pageNumber' => $pageNumber]) ?>"><?= $pageNumber ?></a>
+                        </li>
+                    <?php endforeach; ?>
+                    <?php if (PaginationService::getTotalPages() > 1) : ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                     ->generate(AltoRouter::getRouterInstance()
+                                                                                          ->match()['name'], ['pageNumber' => PaginationService::getTotalPages()]) ?>"><?= PaginationService::getTotalPages() ?></a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>

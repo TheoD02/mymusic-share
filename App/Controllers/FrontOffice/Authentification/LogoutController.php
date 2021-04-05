@@ -31,8 +31,14 @@ class LogoutController extends BaseController
      */
     public function logoutAction(): void
     {
+        /** Détruire les données enregistrée en session */
         unset($_SESSION['user']);
-        setcookie('user_persist', '', -1);
+
+        /** Supprimé le cookie "rememberMe" si il été existant */
+        if (isset($_COOKIE['user_persist']))
+        {
+            setcookie('user_persist', '', -1);
+        }
         FlashMessageService::addSuccessMessage('Vous avez été déconnecté avec succès');
         $this->redirectWithAltoRouter('home');
     }

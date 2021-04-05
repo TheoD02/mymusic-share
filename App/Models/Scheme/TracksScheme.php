@@ -26,10 +26,11 @@ class TracksScheme extends BaseModel
     protected int $listenCount;
     protected int $downloadCount;
 
+    /** JOIN VALUE */
     protected string $artistsName;
-
-    private static ?Categories $category = null;
-    private static ?MusicKey $musicKey = null;
+    protected string $musicKey;
+    protected string $categoryId;
+    protected string $categoryName;
 
     /**
      * Retourne les variables de l'objet
@@ -294,32 +295,59 @@ class TracksScheme extends BaseModel
     }
 
     /**
-     * @return Categories|false
+     * @return string
      */
-    public function getCategory(): Categories|false
+    public function getMusicKey(): string
     {
-        if (self::$category === null || self::$category->getId() !== $this->getIdCategories())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_categories` WHERE `id` = :idCategory');
-            $stmt->bindValue(':idCategory', $this->getIdCategories(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$category = $stmt->fetchObject(Categories::class);
-        }
-        return self::$category;
+        return $this->musicKey;
     }
 
     /**
-     * @return MusicKey|false
+     * @param string $musicKey
+     *
+     * @return TracksScheme
      */
-    public function getMusicKey(): MusicKey|false
+    public function setMusicKey(string $musicKey): TracksScheme
     {
-        if (self::$musicKey === null || self::$musicKey->getId() !== $this->getIdMusicKey())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_musickey` WHERE `id` = :idMusicKey');
-            $stmt->bindValue(':idMusicKey', $this->getIdMusicKey(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$musicKey = $stmt->fetchObject(MusicKey::class);
-        }
-        return self::$musicKey;
+        $this->musicKey = $musicKey;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCategoryId(): string
+    {
+        return $this->categoryId;
+    }
+
+    /**
+     * @param string $categoryId
+     *
+     * @return TracksScheme
+     */
+    public function setCategoryId(string $categoryId): TracksScheme
+    {
+        $this->categoryId = $categoryId;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCategoryName(): string
+    {
+        return $this->categoryName;
+    }
+
+    /**
+     * @param string $categoryName
+     *
+     * @return TracksScheme
+     */
+    public function setCategoryName(string $categoryName): TracksScheme
+    {
+        $this->categoryName = $categoryName;
+        return $this;
     }
 }

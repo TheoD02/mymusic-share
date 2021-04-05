@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Tracks;
+use Core\CSRFHelper;
+use Core\PaginationService;
 
 /** @var Tracks[]|false $tracksList */
 ?>
@@ -10,7 +12,7 @@ use App\Models\Tracks;
             <h1>Liste des musiques</h1>
             <div class="d-flex flex-row-reverse my-3">
                 <form action="<?= AltoRouter::getRouterInstance()->generate('adminUploadMusic') ?>" method="post">
-                    <?= \Core\CSRFHelper::generateCsrfHiddenInput() ?>
+                    <?= CSRFHelper::generateCsrfHiddenInput() ?>
                     <button type="submit" name="uploadMusic" class="btn btn-primary">
                         Ajouter une musique
                     </button>
@@ -35,7 +37,7 @@ use App\Models\Tracks;
                                 <td><?= $track->getArtistsName() ?></td>
                                 <td><?= $track->getFormattedReleaseDate() ?></td>
                                 <td><?= $track->isPending() ? '<i class="mdi mdi-file-clock text-warning" title="En attente de vérification pour la mise en ligne">' : '<i class="mdi mdi-check-circle text-success" title="Disponible en ligne"></i>' ?></td>
-                                <td><?= $track->getCategory()->getName() ?></td>
+                                <td><?= $track->getCategoryName() ?></td>
                                 <td>
                                     <form action="<?= AltoRouter::getRouterInstance()->generate('adminEditMusic', ['id' => $track->getId()]) ?>"
                                           method="POST">
@@ -56,11 +58,33 @@ use App\Models\Tracks;
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5">Pas de musique en ligne</td>
+                            <td colspan="6">Pas de musique en ligne</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
+            <nav aria-label="Page navigation example" class="my-5">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                 ->generate(AltoRouter::getRouterInstance()
+                                                                                      ->match()['name'], ['pageNumber' => 1]) ?>"><?= 1 ?></a>
+                    </li>
+                    <?php foreach (PaginationService::getPagination() as $pageNumber) : ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                     ->generate(AltoRouter::getRouterInstance()
+                                                                                          ->match()['name'], ['pageNumber' => $pageNumber]) ?>"><?= $pageNumber ?></a>
+                        </li>
+                    <?php endforeach; ?>
+                    <?php if (PaginationService::getTotalPages()  > 1) : ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                     ->generate(AltoRouter::getRouterInstance()
+                                                                                          ->match()['name'], ['pageNumber' => PaginationService::getTotalPages()]) ?>"><?= PaginationService::getTotalPages() ?></a>
+                        </li>
+                    <?php endif; ?>
+            </nav>
         </div>
     </div>
 </div>

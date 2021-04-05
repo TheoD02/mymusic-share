@@ -17,13 +17,30 @@ use Core\Form\FormValidator;
 use Core\Mailer;
 use Core\Security;
 use Core\SpaceDiskHelper;
+use Core\UserHelper;
 use Exception;
 
 class UserSendMusicController extends BaseController
 {
+    /**
+     * Vérifie que l'utilisateur soit connectée
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        if (!UserHelper::isAuthAsAnyRole())
+        {
+            FlashMessageService::addErrorMessage('Vous devez être connecter pour accéder à cet page !');
+            $this->redirectWithAltoRouter('login');
+        }
+    }
+
+    /** Affiche le formulaire d'envoi de musique */
     public function showSendMusicForm(): void
     {
+        /** Vérifie que l'espace disponible sur le serveur soit supérieur à 2GO. */
         SpaceDiskHelper::checkFreeSpace(2, 'profileCurrentSubscription');
+
         $musicKeyList   = (new MusicKey())->getMusicKeyList();
         $categoriesList = (new Categories())->getCategoriesList();
         $this->render('UserProfile/ProfileSendMusic', 'Abonnement en cours', [
@@ -34,8 +51,11 @@ class UserSendMusicController extends BaseController
 
     public function addMusicAction(): void
     {
+        /** Vérifie que l'espace disponible sur le serveur soit supérieur à 2GO. */
         SpaceDiskHelper::checkFreeSpace(2, 'profileCurrentSubscription');
+
         $FV = new FormValidator($_POST, $_FILES);
+
         /** Le formulaire existe et le token CSRF est valide. */
         if ($FV->checkFormIsSend('uploadMusicAction'))
         {
@@ -66,7 +86,7 @@ class UserSendMusicController extends BaseController
                ->isNotEmpty()
                ->minLength(1)
                ->maxLength(255);
-            $FV->verify('artists')
+            $FV->verify('artistsName')
                ->isNotEmpty()
                ->minLength(1)
                ->maxLength(100);
@@ -105,7 +125,7 @@ class UserSendMusicController extends BaseController
                                ->setHash(Security::generateToken(15) . (new \DateTime())->getTimestamp() . Security::generateToken(15));
 
                     /** Récupérer les ID des artistes trouver ou ajouter */
-                    $listOfArtistsId = $this->addOrGetArtistId($FV->getFieldValue('artists'));
+                    $listOfArtistsId = $this->addOrGetArtistId($FV->getFieldValue('artistsName'));
 
                     /** Chemin d'accès au fichier temporaire */
                     $tempPath = MP3_TEMP_PATH . $tempFileName . '.tmp';
@@ -128,6 +148,7 @@ class UserSendMusicController extends BaseController
                         {
                             /** Associer le/les artiste à la musique via son ID */
                             $this->associateArtistToTrack($trackModel->getLastInsertId(), $listOfArtistsId);
+                            /** Toutes les requêtes sont valide on envoi les données en base de données */
                             Database::getPDOInstance()->commit();
 
                             FlashMessageService::addSuccessMessage('La musique [' . $trackModel->getTitle() . '] à bien été mis en ligne.');
@@ -143,8 +164,9 @@ class UserSendMusicController extends BaseController
                 }
                 catch (Exception $e)
                 {
+                    /** Une exception à été générer dans lors d'une requête SQL, on annule toutes les requêtes */
                     Database::getPDOInstance()->rollBack();
-                    die($e->getMessage());
+                    FlashMessageService::addErrorMessage('Une erreur est survenue lors de la mise en ligne de votre musique. Veuillez ressayer !');
                 }
             }
         }

@@ -11,7 +11,8 @@
     "filp/whoops": "^2.9",
     "ext-pdo": "*",
     "symfony/var-dumper": "^5.2",
-    "apfelbox/php-file-download": "^2.1"
+    "apfelbox/php-file-download": "^2.1",
+    "ext-zip": "*"
   },
   "autoload": {
     "psr-4": {

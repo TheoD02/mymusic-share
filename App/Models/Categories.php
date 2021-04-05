@@ -39,11 +39,14 @@ class Categories extends CategoriesScheme
     /**
      * Retourne la liste des catégories
      *
+     * @param int $startOffset
+     * @param int $limit
+     *
      * @return Categories[]|false
      */
-    public function getCategoriesList(): array|false
+    public function getCategoriesList(int $startOffset = 0, int $limit = 100): array|false
     {
-        $stmt = $this->query('SELECT * FROM `myokndefht_categories`');
+        $stmt = $this->query('SELECT * FROM `myokndefht_categories` LIMIT ' . $startOffset . ', ' . $limit);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
@@ -111,5 +114,17 @@ class Categories extends CategoriesScheme
         $stmt->bindValue(':slug', $this->getSlug(), PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchObject(self::class);
+    }
+
+    /**
+     *  Retourne le nombre totale de catégories existante
+     *
+     * @return int
+     */
+    public function getTotalNumberOfCategories(): int
+    {
+        $stmt = $this->query('SELECT COUNT(`id`) AS `numberOfCategories` FROM `myokndefht_categories`');
+        $stmt->execute();
+        return $stmt->fetch()->numberOfCategories;
     }
 }

@@ -10,17 +10,11 @@ FormHelper::setFormData($userInfo ?? $_POST); ?>
             <form method="post" class="border shadow rounded my-4" id="registerForm">
                 <fieldset class="row border-bottom rounded shadow-sm mx-0 px-2 py-3">
                     <legend>Identité</legend>
-                    <div class="form-floating my-3 col-md-6">
-                        <input type="text" class="form-control <?= FormValidator::fieldIsValid('lastName') ?>" name="lastName" id="lastName"
-                               placeholder="Nom" value="<?= FormHelper::getSanitizedFieldValue('lastName') ?>">
-                        <label for="lastName" class="form-label ps-4">Nom</label>
-                        <?= FormValidator::getOneErrorHTML('lastName') ?>
-                    </div>
-                    <div class="form-floating my-3 col-md-6">
-                        <input type="text" class="form-control <?= FormValidator::fieldIsValid('firstName') ?>" name="firstName" id="firstName"
-                               placeholder="Prénom" value="<?= FormHelper::getSanitizedFieldValue('firstName') ?>">
-                        <label for="firstName" class="form-label ps-4">Prénom</label>
-                        <?= FormValidator::getOneErrorHTML('firstName') ?>
+                    <div class="form-floating my-3 col-md-12">
+                        <input type="text" class="form-control <?= FormValidator::fieldIsValid('username') ?>" name="username" id="username"
+                               placeholder="Nom d'utilisateur" value="<?= FormHelper::getSanitizedFieldValue('username') ?>">
+                        <label for="username" class="form-label ps-4">Nom d'utilisateur</label>
+                        <?= FormValidator::getOneErrorHTML('username') ?>
                     </div>
                 </fieldset>
                 <fieldset class="row border-bottom rounded mx-0 shadow-sm py-3">
@@ -35,8 +29,8 @@ FormHelper::setFormData($userInfo ?? $_POST); ?>
                 <fieldset class="row border-bottom rounded mx-0 shadow-sm py-3">
                     <legend>Rôle</legend>
                     <div class="form-floating my-3">
-                        <select name="id_userRole" id="id_userRole" class="form-select">
-                            <option value="default">Choisissez un rôle</option>
+                        <select name="id_userRole" id="id_userRole" class="form-select <?= FormValidator::fieldIsValid('id_userRole') ?>">
+                            <option value="default" selected disabled>Choisissez un rôle</option>
                             <?php foreach ($rolesList as $role): ?>
                                 <option value="<?= $role->getId() ?>" <?= $role->getId() === (int)FormHelper::getSanitizedFieldValue('id_userRole') ? 'selected' : '' ?>>
                                     <?= $role->getName() ?>

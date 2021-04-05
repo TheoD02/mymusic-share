@@ -14,10 +14,6 @@ class UsersDownloadedTracksScheme extends BaseModel
     public int $id;
     public int $id_tracks;
     public int $id_users;
-
-    private static ?Users $user = null;
-    private static ?Tracks $track = null;
-
     /**
      * @return int
      */
@@ -73,35 +69,5 @@ class UsersDownloadedTracksScheme extends BaseModel
     {
         $this->id_users = $id_users;
         return $this;
-    }
-
-    /**
-     * @return Tracks|false
-     */
-    public function getTrack(): Tracks|false
-    {
-        if (self::$track === null || self::$track->getId() !== $this->getIdTracks())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_tracks` WHERE `id` = :idTrack');
-            $stmt->bindValue(':idTrack', $this->getIdUsers(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$track = $stmt->fetchObject(Tracks::class);
-        }
-        return self::$track;
-    }
-
-    /**
-     * @return Tracks|false
-     */
-    public function getUser(): Tracks|false
-    {
-        if (self::$user === null || self::$user->getId() !== $this->getIdUsers())
-        {
-            $stmt = $this->prepare('SELECT * FROM `myokndefht_users` WHERE `id` = :idUser');
-            $stmt->bindValue(':idUser', $this->getIdUsers(), PDO::PARAM_INT);
-            $stmt->execute();
-            self::$user = $stmt->fetchObject(Tracks::class);
-        }
-        return self::$user;
     }
 }

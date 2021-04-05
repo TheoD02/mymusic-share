@@ -10,8 +10,9 @@ class BaseController
 {
     public function __construct()
     {
-        /** Vérifie si l'utilisateur à un cookie enregistrer pour garder sa connexion active (rememberMe)
-         *  Et qu'il ne soit pas déjà authentifié
+        /**
+         * Vérifie si l'utilisateur à un cookie enregistrer pour garder sa connexion active (rememberMe)
+         * Et qu'il ne soit pas déjà authentifié
          */
         if (isset($_COOKIE['user_persist']) && !isset($_SESSION['user']))
         {
@@ -21,13 +22,12 @@ class BaseController
                 $userInfo = (new Users())->setRememberMeToken($_COOKIE['user_persist'])
                                          ->getUserByRememberMeToken();
                 /** Si on a des informations sur cette utilisateur on le connecte automatiquement */
-                if (get_class($userInfo) === Users::class)
+                if ($userInfo !== false)
                 {
                     /** Stocker des informations utilisateur en session (isAuth, role, nom, prénom) */
                     $_SESSION['user']['id']        = $userInfo->getId();
                     $_SESSION['user']['role']      = $userInfo->getIdUserRole();
-                    $_SESSION['user']['lastname']  = $userInfo->getLastname();
-                    $_SESSION['user']['firstname'] = $userInfo->getFirstname();
+                    $_SESSION['user']['username']  = $userInfo->getUsername();
                     $_SESSION['user']['canDownload'] = $userInfo->getRemainingDownload() === null ? false : true;
 
                     FlashMessageService::addSuccessMessage('Vous êtes toujours connectée !');

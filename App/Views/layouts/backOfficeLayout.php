@@ -1,4 +1,6 @@
-<?php $router = AltoRouter::getRouterInstance(); ?>
+<?php use Core\CSRFHelper;
+
+$router = AltoRouter::getRouterInstance(); ?>
 <!doctype html>
 <html lang="fr" dir="ltr">
 <head>
@@ -59,7 +61,7 @@
                         </li>
                         <li class="nav-item">
                             <form action="<?= AltoRouter::getRouterInstance()->generate('adminAddCategory') ?>" method="post">
-                                <?= \Core\CSRFHelper::generateCsrfHiddenInput() ?>
+                                <?= CSRFHelper::generateCsrfHiddenInput() ?>
                                 <button type="submit" name="addCategory" class="btn btn-primary">
                                     Ajoute une catégorie
                                 </button>
@@ -82,9 +84,8 @@
                         </li>
                         <li class="nav-item">
                             <form action="<?= AltoRouter::getRouterInstance()->generate('adminUploadMusic') ?>" method="post">
-                                <?= \Core\CSRFHelper::generateCsrfHiddenInput() ?>
-                                <button type="submit" name="uploadMusic"
-                                        class="bg-transparent border-0 text-danger">
+                                <?= CSRFHelper::generateCsrfHiddenInput() ?>
+                                <button type="submit" name="uploadMusic">
                                     Ajouter une musique
                                 </button>
                             </form>
@@ -107,16 +108,6 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?= $router->generate('adminUsersList'); ?>">
                                 Voir la liste des membres
-                            </a>
-                        </li>
-                    </ul>
-                    <h6 class="sidebar-heading d-flex justify-content-center align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>Gestion des commandes</span>
-                    </h6>
-                    <ul class="nav flex-column mb-2">
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= $router->generate('adminOrdersList'); ?>">
-                                Voir la liste des commandes
                             </a>
                         </li>
                     </ul>

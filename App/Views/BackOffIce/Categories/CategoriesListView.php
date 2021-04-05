@@ -2,6 +2,7 @@
 
 
 use App\Models\Categories;
+use Core\PaginationService;
 
 /** @var Categories[]|false $categoriesList */
 
@@ -62,6 +63,29 @@ $router = AltoRouter::getRouterInstance();
                     <?php endif; ?>
                 </tbody>
             </table>
+            <nav aria-label="Page navigation example" class="my-5">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                 ->generate(AltoRouter::getRouterInstance()
+                                                                                      ->match()['name'], ['pageNumber' => 1]) ?>"><?= 1 ?></a>
+                    </li>
+                    <?php foreach (PaginationService::getPagination() as $pageNumber) : ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                     ->generate(AltoRouter::getRouterInstance()
+                                                                                          ->match()['name'], ['pageNumber' => $pageNumber]) ?>"><?= $pageNumber ?></a>
+                        </li>
+                    <?php endforeach; ?>
+                    <?php if (PaginationService::getTotalPages() > 1) : ?>
+                        <li class="page-item">
+                            <a class="page-link" href="<?= AltoRouter::getRouterInstance()
+                                                                     ->generate(AltoRouter::getRouterInstance()
+                                                                                          ->match()['name'], ['pageNumber' => PaginationService::getTotalPages()]) ?>"><?= PaginationService::getTotalPages() ?></a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
