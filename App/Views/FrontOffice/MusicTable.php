@@ -92,7 +92,7 @@ use Core\UserHelper; ?>
             </div>
         <?php endif; ?>
     <?php else: ?>
-        <?php if (PaginationService::getTotalPages() < PaginationService::getCurrentPage()) : ?>
+        <?php if (PaginationService::getTotalPages() + 1 < PaginationService::getCurrentPage()) : ?>
             <p class="h2">Cet page n'existe pas</p>
         <?php else: ?>
             <p class="h2">Pas de musique disponible pour le moment.</p>

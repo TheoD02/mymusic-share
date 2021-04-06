@@ -81,7 +81,7 @@ $showPlayer = str_contains($_SERVER['REQUEST_URI'], 'category') || str_contains(
                     </li>
                 </ul>
                 <form class="d-flex" action="<?= $router->generate('searchTrack') ?>" method="post">
-                    <input class="form-control me-2" name="searchTerms" id="searchTerms" type="search" placeholder="Rechercher" aria-label="Rechercher">
+                    <input class="form-control me-2" name="searchTerms" id="searchTerms" type="search" placeholder="Rechercher" aria-label="Rechercher" value="<?= htmlspecialchars($_POST['searchTerms'] ?? '') ?>">
                     <?= CSRFHelper::generateCsrfHiddenInput() ?>
                     <button class="btn btn-outline-success" name="searchTrackForm" type="submit">
                         <i class="mdi mdi-magnify"></i>

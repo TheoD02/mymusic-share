@@ -68,14 +68,9 @@ VALUES
 CREATE TABLE `users`
 (
     `id`                      INT AUTO_INCREMENT NOT NULL,
-    `lastName`                VARCHAR(50)        NOT NULL,
-    `firstName`               VARCHAR(50)        NOT NULL,
+    `username`                VARCHAR(50)        NOT NULL,
     `email`                   VARCHAR(150)       NOT NULL,
     `password`                VARCHAR(60)        NOT NULL,
-    `country`                 VARCHAR(80)        NOT NULL,
-    `zipCode`                 VARCHAR(5)         NOT NULL,
-    `city`                    VARCHAR(85)        NOT NULL,
-    `address`                 VARCHAR(255)       NOT NULL,
     `registerDate`            DATETIME           NOT NULL,
     `remainingDownload`       INT,
     `confirmationToken`       VARCHAR(255),
@@ -252,3 +247,55 @@ ALTER TABLE `users`
     CHANGE `registerDate` `registerDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE `tracks`
     CHANGE `releaseDate` `releaseDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+
+DELIMITER $$
+--
+-- Procédures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getTopDownloaded` (IN `numberOfMusic` INT)  READS SQL DATA
+SELECT
+    `myokndefht_tracks`.`id`,
+    `title`, `bpm`, `bitrate`, `releaseDate`, `path`, `hash`, `ispending`, `listenCount`, `id_musicKey`,
+    GROUP_CONCAT(DISTINCT `myokndefht_artists`.`name` SEPARATOR ', ') AS `artistsName`,
+    COUNT(DISTINCT `myokndefht_usersdownloadedtracks`.`id`) AS `downloadCount`,
+    `myokndefht_musickey`.`musicKey`
+FROM
+    `myokndefht_tracks`
+    INNER JOIN `myokndefht_artiststracks`
+               ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
+    INNER JOIN `myokndefht_artists`
+               ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
+    INNER
+        JOIN `myokndefht_usersdownloadedtracks`
+             ON `myokndefht_tracks`.`id` = `myokndefht_usersdownloadedtracks`.`id_tracks`
+    INNER JOIN `myokndefht_musickey` ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+GROUP BY
+    `myokndefht_usersdownloadedtracks`.`id_tracks`
+ORDER BY
+    `downloadCount` DESC
+LIMIT numberOfMusic$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getTopListened` (IN `numberOfMusics` INT)  READS SQL DATA
+SELECT
+    `myokndefht_tracks`.`id`,
+    `title`, `bpm`, `bitrate`, `releaseDate`, `path`, `hash`, `ispending`, `listenCount`, `id_musicKey`,
+    GROUP_CONCAT(DISTINCT `myokndefht_artists`.`name` SEPARATOR ', ') AS `artistsName`,
+    COUNT(DISTINCT `myokndefht_usersdownloadedtracks`.`id`) AS `downloadCount`,
+    `myokndefht_musickey`.`musicKey`
+FROM
+    `myokndefht_tracks`
+    INNER JOIN `myokndefht_artiststracks`
+               ON `myokndefht_tracks`.`id` = `myokndefht_artiststracks`.`id_tracks`
+    INNER JOIN `myokndefht_artists`
+               ON `myokndefht_artiststracks`.`id_artists` = `myokndefht_artists`.`id`
+    LEFT JOIN `myokndefht_usersdownloadedtracks`
+              ON `myokndefht_tracks`.`id` = `myokndefht_usersdownloadedtracks`.`id_tracks`
+    INNER JOIN `myokndefht_musickey` ON `myokndefht_tracks`.`id_musicKey` = `myokndefht_musickey`.`id`
+GROUP BY
+    `myokndefht_tracks`.`id`
+ORDER BY
+    `listenCount` DESC
+LIMIT numberOfMusics$$
+
+DELIMITER ;
