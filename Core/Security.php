@@ -15,6 +15,6 @@ class Security
      */
     public static function generateToken(int $length): string
     {
-        return bin2hex(random_bytes($length / 2));
+        return str_shuffle(bin2hex(random_bytes($length / 2)));
     }
 }

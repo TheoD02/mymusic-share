@@ -9,7 +9,6 @@ use Core\Base\BaseController;
 use Core\FlashMessageService;
 use Core\Mailer;
 use Core\Security;
-use Core\UserAuthHelper;
 use Core\UserHelper;
 
 class EmailConfirmationController extends BaseController

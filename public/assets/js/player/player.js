@@ -161,6 +161,9 @@ export class AudioPlayerManager
                 AudioPlayerManager.musicPlayed.push(AudioPlayerManager.lastMusicHash);
                 /** Ajouter une écoute sur la musique actuel en base de données */
                 AudioPlayerManager.addListenOnTrack();
+                let currentNumberOfPlayed = AudioPlayerManager.currentPlayBtnClicked.parentNode.parentNode.querySelector('.listen-count').textContent;
+                currentNumberOfPlayed++;
+                AudioPlayerManager.currentPlayBtnClicked.parentNode.parentNode.querySelector('.listen-count').textContent = currentNumberOfPlayed;
 
                 /** Reset timer */
                 clearInterval(AudioPlayerManager.currentMusicPlayedSecondInterval);

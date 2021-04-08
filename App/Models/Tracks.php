@@ -255,7 +255,7 @@ class Tracks extends TracksScheme
     public function addListenOnTrackByHash(): bool
     {
         $stmt = $this->prepare('UPDATE `myokndefht_tracks` SET `listenCount` = `listenCount` + 1 WHERE `hash` = :hash');
-        $stmt->bindValue(':hash', $this->getHash(), PDO::PARAM_INT);
+        $stmt->bindValue(':hash', $this->getHash(), PDO::PARAM_STR);
         return $stmt->execute();
     }
 

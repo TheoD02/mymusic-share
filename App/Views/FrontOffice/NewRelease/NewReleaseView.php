@@ -17,7 +17,7 @@ $router = AltoRouter::getRouterInstance();
                 </div>
                 <?php require APP_ROOT . 'App/Views/FrontOffice/parts/selectDownloadList.php' ?>
                 <div id="category-music-container">
-                    <div class="col-md-12 mt-5 px-4 pb-5">
+                    <div class="col-md-12 mt-5 px-md-4 pb-5">
                         <?php if (!empty($tracksList)) : ?>
                             <?php require APP_ROOT . 'App/Views/FrontOffice/MusicTable.php' ?>
                         <?php else: ?>

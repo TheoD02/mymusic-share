@@ -30,7 +30,7 @@ class AdminArtistsManagementController extends BaseAdminController
 
         /** Récupérer la liste des artistes, avec l'offset et la limit calculer avec PaginationService */
         $artistList = $artistMdl->getArtistList(PaginationService::getOffsetForDB(), PaginationService::getLimitForDB());
-        $this->render('Artists/ArtistsList', 'Liste des artistes', [
+        $this->render('Artists/ArtistsList', 'Gestion des artistes', [
             'artistList' => $artistList,
         ], BaseView::BACK_OFFICE_PATH);
     }

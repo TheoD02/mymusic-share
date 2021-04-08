@@ -5,7 +5,6 @@ namespace App\Controllers\BackOffice;
 use App\Models\Categories;
 use Core\Base\BaseAdminController;
 use Core\Base\BaseView;
-use Core\CSRFHelper;
 use Core\FlashMessageService;
 use Core\Form\FormValidator;
 use Core\PaginationService;

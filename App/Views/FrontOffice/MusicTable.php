@@ -1,6 +1,6 @@
 <?php use Core\PaginationService;
 use Core\UserHelper; ?>
-<div class="col-md-12 mt-5 px-4">
+<div class="col-md-12 mt-5 px-2 px-md-4">
     <?php if (!empty($tracksList)) : ?>
         <div class="row music-row my-1 text-center">
             <div class="col-4 col-lg-2 col-xl-2 d-flex justify-content-evenly align-items-center px-2 py-2">
@@ -48,12 +48,12 @@ use Core\UserHelper; ?>
                     <span>
                         <i class="material-icons category-table-icon-stats mdi mdi-file-download"
                            title="Nombre de téléchargements"></i>
-                        <?= $track->getDownloadCount() ?>
+                        <span class="download-count"><?= $track->getDownloadCount() ?></span>
                     </span>
                     <span>
                         <i class="material-icons category-table-icon-stats mdi mdi-play"
                            title="Nombre d'écoutes"></i>
-                        <?= $track->getListenCount() ?>
+                        <span class="listen-count"><?= $track->getListenCount() ?></span>
                     </span>
                 </div>
                 <div class="col-lg-1 d-none d-lg-flex justify-content-center">
@@ -81,7 +81,7 @@ use Core\UserHelper; ?>
                                                                               ->generate('ajaxGetCategory', ['slug' => $slug, 'currentPage' => $pageNumber]) ?>"><?= $pageNumber ?></a>
                             </li>
                         <?php endforeach; ?>
-                        <?php if (PaginationService::getTotalPages()  > 1) : ?>
+                        <?php if (PaginationService::getTotalPages() > 1) : ?>
                             <li class="page-item">
                                 <a class="page-link" data-link="<?= AltoRouter::getRouterInstance()
                                                                               ->generate('ajaxGetCategory', ['slug' => $slug, 'currentPage' => PaginationService::getTotalPages()]) ?>"><?= PaginationService::getTotalPages() ?></a>

@@ -4,7 +4,6 @@
 namespace App\Controllers\FrontOffice\UserProfile;
 
 use App\Models\DownloadListTracks;
-use App\Models\UsersDownloadedTracks;
 use App\Models\UsersDownloadLists;
 use Core\Base\BaseController;
 use Core\FlashMessageService;

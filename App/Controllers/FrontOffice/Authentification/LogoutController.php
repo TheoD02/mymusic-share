@@ -6,7 +6,6 @@ namespace App\Controllers\FrontOffice\Authentification;
 
 use Core\Base\BaseController;
 use Core\FlashMessageService;
-use Core\UserAuthHelper;
 use Core\UserHelper;
 
 class LogoutController extends BaseController

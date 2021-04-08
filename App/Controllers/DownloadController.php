@@ -11,10 +11,8 @@ use App\Models\Users;
 use App\Models\UsersDownloadedTracks;
 use App\Models\UsersDownloadLists;
 use Core\Base\BaseController;
-use Core\FlashMessageService;
 use Core\Form\FormValidator;
 use Core\UserHelper;
-use http\Client\Curl\User;
 use ZipArchive;
 
 class DownloadController extends BaseController
@@ -66,12 +64,14 @@ class DownloadController extends BaseController
             {
                 UserHelper::setIsAuthorizedToDownload(false);
                 header('HTTP/1.1 403 Forbidden');
+                (new ErrorController())->forbidden();
                 exit();
             }
         }
         else
         {
-            header('HTTP/1.1 423 Locked', 423);
+            header('HTTP/1.1 401 Unauthorized', 401);
+            (new ErrorController())->forbidden();
             exit();
         }
     }

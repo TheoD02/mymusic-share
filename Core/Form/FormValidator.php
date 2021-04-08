@@ -244,11 +244,11 @@ class FormValidator extends FormValidatorCore
      *
      * @return $this
      */
-    public function passwordConstraintRegex(string $regex = '/[^\'"]{12,100}/'): FormValidator
+    public function passwordConstraintRegex(string $regex = '/^(?=.*\p{Ll})(?=.*\p{Lu})(?=.*\d)[\p{L}\d&@$^=!ù:;*?\-_+]{12,}$/mu'): FormValidator
     {
         if (!preg_match($regex, $this->getCurrentValue()))
         {
-            $this->setError('Veuillez saisir un mot de passe valide.');
+            $this->setError('Veuillez saisir un mot de passe valide (12 caractères minimum, 1 Lettre Minuscule et 1 Lettre Majuscule).');
         }
         return $this;
     }

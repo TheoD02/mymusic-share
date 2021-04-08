@@ -5,7 +5,6 @@ namespace App\Controllers;
 
 
 use App\Models\Tracks;
-use Cassandra\Date;
 
 class PlayerController
 {
@@ -27,6 +26,7 @@ class PlayerController
         if ($_SERVER['REQUEST_METHOD'] !== 'GET')
         {
             header('HTTP/1.1 405 Method Not Allowed', 405);
+            (new ErrorController())->methodNotAllowed();
             exit();
         }
         /** Ne pas utiliser la session pour ce script, il bloque le chargement de tout autre script charger tant que ce script est en cours */
@@ -113,7 +113,8 @@ class PlayerController
                 exit;
             }
         }
-        header('HTTP/1.1 406 Not Acceptable', 406);
+        header('HTTP/1.1 403 Unauthorized', 403);
+        (new ErrorController())->forbidden();
         exit;
     }
 }

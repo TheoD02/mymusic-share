@@ -13,7 +13,7 @@ use Core\PaginationService;
                 <div class="row">
                     <?php if (!empty($categoriesList)) : ?>
                     <div class="col-md-12 d-flex flex-row-reverse">
-                        <form id="categoriesElementSelector" action="<?= AltoRouter::getRouterInstance()->generate('categoriesList', ['pageNumber' => PaginationService::getCurrentPage(), 'numberOfElementPerPage' => 4]) ?>" method="get">
+                        <form id="categoriesElementSelector" action="<?= AltoRouter::getRouterInstance()->generate('categoriesList', ['pageNumber' => PaginationService::getCurrentPage(), 'numberOfElementPerPage' => 8]) ?>" method="get">
                             <div class="form-group">
                                 <label for="numberOfElementPerPage">Nombre d'éléments par page</label>
                                 <select name="numberOfElementPerPage" class="form-select" id="numberOfElementPerPage">
@@ -26,7 +26,7 @@ use Core\PaginationService;
                     </div>
                     <?php $nb = $_GET['numberOfElementPerPage'] ?? 8 ?>
                     <?php foreach ($categoriesList as $category) : ?>
-                        <div class="card-categorie col-6 col-sm-4 col-md-3 my-3">
+                        <div class="card-categorie col-sm-6 col-md-3 my-3">
                             <a href="<?= AltoRouter::getRouterInstance()
                                                    ->generate('category', ['slug' => $category->getSlug(), 'currentPage' => 1]) ?>"
                                class="d-block text-center my-auto" title="Voir la catégorie <?= $category->getName() ?>">

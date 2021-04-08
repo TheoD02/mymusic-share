@@ -10,7 +10,6 @@ use Core\FlashMessageService;
 use Core\Form\FormValidator;
 use Core\Mailer;
 use Core\Security;
-use Core\UserAuthHelper;
 use Core\UserHelper;
 
 class RegisterController extends BaseController

@@ -30,7 +30,7 @@ $router = AltoRouter::getRouterInstance(); ?>
     </div>
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
         <a class="navbar-brand col-md-3 col-lg-2 px-3 my-2 bg-transparent" href="<?= AltoRouter::getRouterInstance()->generate('adminHome') ?>">
-            MyMusic Share - Panneau de gestion
+            MyMusic Share - Admin
         </a>
         <button class="navbar-toggler float-end me-2 my-2 d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
                 aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -130,7 +130,7 @@ $router = AltoRouter::getRouterInstance(); ?>
             </nav>
             <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="pt-3 pb-2 mb-3">
-                    <h1 class="h2"><?= $title ?? 'Panneau de gestion' ?></h1>
+                    <h1 class="h1 text-center mt-5"><?= $title ?? 'Panneau de gestion' ?></h1>
                     <div class="col-12"><?= $content ?></div>
                 </div>
             </div>
